@@ -49,5 +49,5 @@ bash
 - Mahmoud El Sonbaty
 - Kareem 7777
 - Ahmed Mohamed Hassan
-- Hossam Hamed حطلي ايموشن قدام كل عنوان زي كدا 🙌💼
+- Hossam Hamed 🙌💼
 
