@@ -13,5 +13,6 @@ namespace AllBirds.Models
         public int SizeId { get; set; }
         public virtual Size? Size { get; set; }
         public int UnitsInStock { get; set; }
+        public virtual ICollection<OrderDetail>? OrderDetails { get; set; }
     }
 }

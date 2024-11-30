@@ -110,45 +110,45 @@ namespace AllBirds.Application.Services.ProductColorImageServices
                 return null;
         }
 
-        public async Task<ResultView<CUProductColorImageDTO>> HardDeleteProductColorImage(CUProductColorImageDTO cUProductColorImageDTO)
+        public async Task<ResultView<CUProductColorImageDTO>> HardDeleteProductColorImage(int Id)
         {
-
-            ProductColorImage productColorImage = (await productColorImageRepository.GetAllAsync()).FirstOrDefault(P => P.Id == cUProductColorImageDTO.Id);
-            if (productColorImage is not null)
+            ResultView<CUProductColorImageDTO> result = new();
+            try
             {
-                string rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-
-
-                string oldFilePath = Path.Combine(rootPath, productColorImage.ImagePath.TrimStart('/'));
-                if (System.IO.File.Exists(oldFilePath))
+                ProductColorImage productColorImage = (await productColorImageRepository.GetAllAsync()).FirstOrDefault(P => P.Id == Id);
+                if (productColorImage is not null)
                 {
-                    System.IO.File.Delete(oldFilePath);
+                    string rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                    string oldFilePath = Path.Combine(rootPath, productColorImage.ImagePath.TrimStart('/'));
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        System.IO.File.Delete(oldFilePath);
+                    }
+                    ProductColorImage productColorImage1 = await productColorImageRepository.DeleteAsync(productColorImage);
+                    CUProductColorImageDTO cUProductColorImageDeleted = mapper.Map<CUProductColorImageDTO>(productColorImage1);
+                    ResultView<CUProductColorImageDTO> resultView = new ResultView<CUProductColorImageDTO>()
+                    {
+                        Data = cUProductColorImageDeleted,
+                        IsSuccess = true,
+                        Msg = $"Product Color Image Deleted Successfully"
+                    };
+                    await productColorImageRepository.SaveChangesAsync();
                 }
-
-
-                ProductColorImage productColorImage1 = await productColorImageRepository.DeleteAsync(productColorImage);
-                CUProductColorImageDTO cUProductColorImageDeleted = mapper.Map<CUProductColorImageDTO>(productColorImage1);
-                ResultView<CUProductColorImageDTO> resultView = new ResultView<CUProductColorImageDTO>()
+                else
                 {
-                    Data = cUProductColorImageDeleted,
-                    IsSuccess = true,
-                    Msg = $"Product Color Image Deleted Successfully"
-                };
-                await productColorImageRepository.SaveChangesAsync();
-                return resultView;
+                    ResultView<CUProductColorImageDTO> resultView1 = new ResultView<CUProductColorImageDTO>()
+                    {
+                        Data = null,
+                        IsSuccess = false,
+                        Msg = $"Product Color Image Not Found"
+                    };
+                }
             }
-            else
+            catch (Exception ex)
             {
-                ResultView<CUProductColorImageDTO> resultView1 = new ResultView<CUProductColorImageDTO>()
-                {
-                    Data = null,
-                    IsSuccess = false,
-                    Msg = $"Product Color Image Not Exist"
-                };
-                return resultView1;
+                result.Msg = $"Error Happened While Deleting Product Color Image, {ex.Message}";
             }
-
-
+            return result;
         }
     }
 }

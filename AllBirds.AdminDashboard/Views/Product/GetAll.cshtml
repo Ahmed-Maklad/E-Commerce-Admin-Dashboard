@@ -1,6 +1,10 @@
 ﻿@model List<GetAllProductDTO>
 @{
     ViewData["Title"] = "Products";
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int pageSize = ViewBag.PageSize ?? 10;
+    int totalItems = ViewBag.TotalItems ?? 0;
+    int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 }
 @section Navbar {
 
@@ -18,15 +22,19 @@
 {
     @if (Success)
     {
-        <div id="msgDiv" class="alert alert-success text-dark" role="alert">
-            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
-        </div>
+        @section Scripts {
+            <script>
+                showMsgSuccessToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
     }
     else
     {
-        <div id="msgDiv" class="alert alert-danger text-dark" role="alert">
-            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
-        </div>
+        @section Scripts {
+            <script>
+                showMsgDangerToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
     }
 }
 @* <h1>AllProducts</h1> *@
@@ -103,22 +111,22 @@
                                     }
         
                                     <td>
-                                        <a type="button" asp-controller="Product" asp-action="Index" class="btn btn-outline-primary"><i class="fas fa-eye"></i></a>
-                                        <a type="button" asp-action="Update" asp-controller="Product" asp-route-id="@prd.Id" class="btn btn-outline-secondary"><i class="fas fa-edit"></i></a>
-                                        <a type="button" asp-action="Delete" asp-controller="Product" asp-route-id="@prd.Id" class="btn btn-outline-danger"><i class="fas fa-trash-alt"></i></a>
-                                        @* <div class="template-demo d-flex justify-content-between"> *@
-                                        @* <div class="dropdown"> *@
-                                        <button type="button" class="btn btn-outline-info dropdown-toggle" id="dropdownMenuIconButton3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <button type="button" class="btn btn-outline-primary dropdown-toggle" id="dropdownMenuIconButton3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <i class="mdi mdi-dots-vertical"></i>
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton3">
                                             <h6 class="dropdown-header">Options</h6>
-                                            <a class="dropdown-item" asp-controller="ProductDetail" asp-action="AllProductDetails" asp-route-id="@prd.Id">Product Details</a>
-                                            <a class="dropdown-item" asp-controller="Product" asp-action="GetAllSpecs" asp-route-id="@prd.Id">Product Specifications</a>
                                             <a class="dropdown-item" asp-controller="Product" asp-action="GetAllProductColors" asp-route-id="@prd.Id">Product Colors</a>
+                                            <a class="dropdown-item" asp-controller="Product" asp-action="GetAllSpecs" asp-route-id="@prd.Id">Product Specifications</a>
+                                            <a class="dropdown-item" asp-controller="ProductDetail" asp-action="AllProductDetails" asp-route-id="@prd.Id">Product Details</a>
                                             @* <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="#">Separated link</a> *@
                                         </div>
+                                        <a type="button" asp-action="Update" asp-controller="Product" asp-route-id="@prd.Id" class="btn btn-outline-secondary"><i class="fas fa-edit"></i></a>
+                                        @* <a type="button" asp-action="Delete" asp-controller="Product" asp-route-id="@prd.Id" class="btn btn-outline-danger"><i class="fas fa-trash-alt"></i></a> *@
+                                        <button type="button" class="btn btn-outline-danger" onclick="openModal('Product', '/Product/Delete/@prd.Id')"><i class="fas fa-trash-alt"></i></button>
+                                        @* <div class="template-demo d-flex justify-content-between"> *@
+                                        @* <div class="dropdown"> *@
                                         @* </div> *@
                                         @* </div> *@
                                     </td>
@@ -128,14 +136,28 @@
                     </table>
                 </div>
             </div>
+            <!-- Pagination -->
             <nav>
                 <ul class="pagination d-flex justify-content-center rounded-separated pagination-primary">
-                    <li class="page-item"><a class="page-link" href="#"><i class="mdi mdi-chevron-left"></i></a></li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">4</a></li>
-                    <li class="page-item"><a class="page-link" href="#"><i class="mdi mdi-chevron-right"></i></a></li>
+                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="GetAll" asp-route-pageNumber="@(currentPage - 1)" asp-route-pageSize="@pageSize"><i class="mdi mdi-chevron-left"></i></a>
+                    </li>
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        <li class="page-item @(i == currentPage ? "active" : "")">
+                            @if (i == currentPage)
+                            {
+                                <a class="page-link">@i</a>
+                            }
+                            else
+                            {
+                                <a class="page-link" asp-action="GetAll" asp-route-pageNumber="@i" asp-route-pageSize="@pageSize">@i</a>
+                            }
+                        </li>
+                    }
+                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                        <a class="page-link" asp-action="GetAll" asp-route-pageNumber="@(currentPage + 1)" asp-route-pageSize="@pageSize"><i class="mdi mdi-chevron-right"></i></a>
+                    </li>
                 </ul>
             </nav>
         </div>

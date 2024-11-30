@@ -1,4 +1,5 @@
 ﻿using AllBirds.Application.Services.SizeServices;
+using AllBirds.DTOs.Shared;
 using AllBirds.DTOs.SizeDTOs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,19 +30,26 @@ namespace AllBirds.AdminDashboard.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _sizeService.CreateAsync(sizeDto);
-                return RedirectToAction(nameof(Index));
+                ResultView<CUSizeDTO> resultView = await _sizeService.CreateAsync(sizeDto);
+                TempData["Msg"] = resultView.Msg;
+                TempData["IsSuccess"] = resultView.IsSuccess;
+                if (resultView.IsSuccess)
+                {
+                    return Redirect("/Color/GetALLForC_CO_S_OS");
+
+                }
+                else
+                {
+                    return View(sizeDto);
+                }
             }
             return View(sizeDto);
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var size = await _sizeService.GetByIdAsync(id);
-            if (size == null)
-            {
-                return NotFound();
-            }
+            GetSizeDTO size = await _sizeService.GetByIdAsync(id);
+
             return View(size);
         }
 
@@ -50,34 +58,27 @@ namespace AllBirds.AdminDashboard.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _sizeService.UpdateAsync(sizeDto);
-                return RedirectToAction(nameof(Index));
+                ResultView<CUSizeDTO> cUSize = await _sizeService.UpdateAsync(sizeDto);
+                if (cUSize.IsSuccess)
+                {
+                    TempData["IsSuccess"] = cUSize.IsSuccess;
+                    TempData["Msg"] = cUSize.Msg;
+                    return Redirect("/Color/GetALLForC_CO_S_OS");
+                }
+                return View(sizeDto);
+
             }
             return View(sizeDto);
         }
-        //
-        public async Task<IActionResult> Delete(int id)
-        {
-            var size = await _sizeService.GetByIdAsync(id);
-            if (size == null)
-            {
-                return NotFound();
-            }
-            return View(size);
-        }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(int id, bool hardDelete)
+
+        public async Task<IActionResult> Delete(int Id)
         {
-            if (hardDelete)
-            {
-                await _sizeService.HardDeleteAsync(id);
-            }
-            else
-            {
-                await _sizeService.SoftDeleteAsync(id);
-            }
-            return RedirectToAction(nameof(Index));
+             ResultView<CUSizeDTO> resultView =   await _sizeService.HardDeleteAsync(Id);
+            TempData["IsSuccess"] = resultView.IsSuccess;
+            TempData["Msg"] = resultView.Msg;
+
+            return Redirect("/Color/GetALLForC_CO_S_OS");
         }
     }
 

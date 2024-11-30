@@ -1,4 +1,5 @@
 ﻿using AllBirds.DTOs.ProductColorImageDTOs;
+using AllBirds.DTOs.ProductDTOs;
 using AllBirds.DTOs.Shared;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace AllBirds.Application.Services.ProductColorImageServices
 
         public Task<List<GetAllProductColorImageDTO>> GetAllProductColorImage(int Id);
 
-        public Task<ResultView<CUProductColorImageDTO>> HardDeleteProductColorImage(CUProductColorImageDTO cUProductColorImageDTO);
+        public Task<ResultView<CUProductColorImageDTO>> HardDeleteProductColorImage(int Id);
 
 
     }

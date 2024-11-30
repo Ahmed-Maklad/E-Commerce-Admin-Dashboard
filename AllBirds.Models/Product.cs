@@ -63,5 +63,6 @@ namespace AllBirds.Models
         public virtual ICollection<ProductReview>? Reviews { get; set; }
         public virtual ICollection<ClientFavorite>? ClientsFavoriteIt { get; set; }
         public virtual ICollection<ProductSpecification>? Specifications { get; set; }
+        public virtual ICollection<ProductDetail>? Details { get; set; }
     }
 }

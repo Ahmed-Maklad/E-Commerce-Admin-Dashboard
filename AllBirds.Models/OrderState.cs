@@ -14,5 +14,6 @@ namespace AllBirds.Models
         
         [MaxLength(16)]
         public string StateEn { get; set; }
+        public virtual ICollection<OrderMaster>? Orders { get; set; }
     }
 }

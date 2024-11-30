@@ -1,0 +1,128 @@
+﻿@model CUAccountDTO
+@{
+    ViewData["Title"] = "AddModerator";
+}
+
+@section Navbar {
+
+    <partial name="_NavbarPartial" />
+}
+@section Sidebar {
+
+    <partial name="_SidebarPartial" />
+}
+@section Footer {
+
+    <partial name="_FooterPartial" />
+}
+@* @if (TempData["IsSuccess"] is bool Success)
+{
+    @if (Success)
+    {
+        <div id="msgDiv" class="alert alert-success text-dark" role="alert">
+            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
+        </div>
+    }
+    else
+    {
+        <div id="msgDiv" class="alert alert-danger text-dark" role="alert">
+            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
+        </div>
+    }
+} *@
+<h1>Add Moderator</h1>
+
+<div class="row">
+    <div class="col-12 grid-margin">
+        <div class="card">
+            <div class="card-body">
+                @* <h4 class="card-title">CreateProduct</h4> *@
+                <form class="form-sample" asp-action="AddModerator">
+                    <p class="card-description"> Main Info </p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label" asp-for="FirstName"></label>
+                                <div class="col-sm-9">
+                                    <input class="form-control" asp-for="FirstName" />
+                                    <span class="text-danger" asp-validation-for="FirstName"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label" asp-for="LastName"></label>
+                                <div class="col-sm-9">
+                                    <input class="form-control" asp-for="LastName" />
+                                    <span class="text-danger" asp-validation-for="LastName"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label" asp-for="Email"></label>
+                                <div class="col-sm-9">
+                                    <input class="form-control" asp-for="Email" />
+                                    <span class="text-danger" asp-validation-for="Email"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label" asp-for="PhoneNumber"></label>
+                                <div class="col-sm-9">
+                                    <input class="form-control" asp-for="PhoneNumber" />
+                                    <span class="text-danger" asp-validation-for="PhoneNumber"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label" asp-for="Password"></label>
+                                <div class="col-sm-9">
+                                    <input class="form-control" asp-for="Password" />
+                                    <span class="text-danger" asp-validation-for="Password"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label" asp-for="ConfirmPassword"></label>
+                                <div class="col-sm-9">
+                                    <input class="form-control" asp-for="ConfirmPassword" />
+                                    <span class="text-danger" asp-validation-for="ConfirmPassword"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mr-2">Create</button>
+                    <a asp-controller="Account" asp-action="GetAll" class="btn btn-dark">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    @if (TempData["IsSuccess"] is bool Success)
+    {
+        @if (Success)
+        {
+            <script>
+                showMsgSuccessToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+        else
+        {
+            <script>
+                showMsgDangerToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+    }
+}

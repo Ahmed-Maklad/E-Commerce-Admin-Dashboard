@@ -13,5 +13,6 @@ namespace AllBirds.Models
         public string Code { get; set; }
         public int Discount { get; set; }
         public bool IsActive { get; set; }
+        public virtual ICollection<OrderMaster>? Orders { get; set; }
     }
 }

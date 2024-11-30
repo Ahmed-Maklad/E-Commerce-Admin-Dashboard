@@ -22,13 +22,20 @@
                         <span class="count bg-success"></span>
                     </div>
                     <div class="profile-name">
-                        <h5 class="mb-0 font-weight-normal">@User.Claims.FirstOrDefault(uc => uc.Type == "Name")</h5>
-                        <span>@User.Claims.FirstOrDefault(uc => uc.Type == "Role")</span>
+                        @if (User.Identity.Name.Length > 15)
+                        {
+                            <h5 class="mb-0 font-weight-normal">@User.Identity.Name[0..12]...</h5>
+                        }
+                        else
+                        {
+                            <h5 class="mb-0 font-weight-normal">@User.Identity.Name</h5>
+                        }
+                        <span>Admin</span>
                     </div>
                 </div>
                 <a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>
                 <div class="dropdown-menu dropdown-menu-right sidebar-dropdown preview-list" aria-labelledby="profile-dropdown">
-                    <a href="#" class="dropdown-item preview-item">
+                    @* <a href="#" class="dropdown-item preview-item">
                         <div class="preview-thumbnail">
                             <div class="preview-icon bg-dark rounded-circle">
                                 <i class="mdi mdi-settings text-primary"></i>
@@ -48,7 +55,7 @@
                         <div class="preview-item-content">
                             <p class="preview-subject ellipsis mb-1 text-small">Change Password</p>
                         </div>
-                    </a>
+                    </a> *@
                     <div class="dropdown-divider"></div>
                     <a asp-controller="Account" asp-action="Logout" class="dropdown-item preview-item">
                         <div class="preview-thumbnail">
@@ -101,24 +108,24 @@
             </a>
             <div class="collapse" id="auth">
                 <ul class="nav flex-column sub-menu">
-                    @if (User.IsInRole("SuperUser"))
-                    {
-                        <li class="nav-item"> <a class="nav-link" href="/Account/GetAll/superuser"> Super Users </a></li>
-                        <li class="nav-item"> <a class="nav-link" href="/Account/GetAll/manager"> Managers </a></li>
+                    @* @if (User.IsInRole("SuperUser"))
+                    { *@
+                        @* <li class="nav-item"> <a class="nav-link" href="/Account/GetAll/superuser"> Super Users </a></li>
+                        <li class="nav-item"> <a class="nav-link" href="/Account/GetAll/manager"> Managers </a></li> *@
                         @* <li class="nav-item"> <a class="nav-link" asp-controller="Account" asp-action="GetAll" asp-route-role="superuser"> Super Users </a></li>
-                        <li class="nav-item"> <a class="nav-link" asp-controller="Account" asp-action="GetAll" asp-route-role="manager"> Managers </a></li> *@
-                    }
-                    else if (User.IsInRole("Manager"))
-                    {
-                        <li class="nav-item"> <a class="nav-link" href="/Account/GetAll/admin"> Admins </a></li>
-                        <li class="nav-item"> <a class="nav-link" href="/Account/GetAll/manager"> Managers </a></li>
+                        <li class="nav-item"> <a class="nav-link" asp-controller="Account" asp-action="GetAll" asp-route-role="manager"> Managers </a></li>
+                    } *@
+                    @* else if (User.IsInRole("Manager"))
+                    { *@
+                        @* <li class="nav-item"> <a class="nav-link" href="/Account/GetAll/admin"> Admins </a></li>
+                        <li class="nav-item"> <a class="nav-link" href="/Account/GetAll/manager"> Managers </a></li> *@
                         @* <li class="nav-item"> <a class="nav-link" asp-controller="Account" asp-action="GetAll" asp-route-role="admin"> Admins </a></li>
-                        <li class="nav-item"> <a class="nav-link" asp-controller="Account" asp-action="GetAll" asp-route-role="manager"> Managers </a></li> *@
-                    }
-                    <li class="nav-item"> <a class="nav-link" href="/Account/GetAll/admin"> Admins </a></li>  
-                    <li class="nav-item"> <a class="nav-link" href="/Account/GetAll/client"> Clients </a></li>
-                    @* <li class="nav-item"> <a class="nav-link" asp-controller="Account" asp-action="GetAll" asp-route-role="admin"> Admins </a></li>
-                    <li class="nav-item"> <a class="nav-link" asp-controller="Account" asp-action="GetAll" asp-route-role="client"> Clients </a></li> *@
+                        <li class="nav-item"> <a class="nav-link" asp-controller="Account" asp-action="GetAll" asp-route-role="manager"> Managers </a></li>
+                    } *@
+                    @* <li class="nav-item"> <a class="nav-link" href="/Account/GetAll/admin"> Admins </a></li>  
+                    <li class="nav-item"> <a class="nav-link" href="/Account/GetAll/client"> Clients </a></li> *@
+                    <li class="nav-item"> <a class="nav-link" asp-controller="Account" asp-action="GetAll" asp-route-role="admin"> Admins </a></li>
+                    <li class="nav-item"> <a class="nav-link" asp-controller="Account" asp-action="GetAll" asp-route-role="client"> Clients </a></li>
                 </ul>
             </div>
         </li>

@@ -92,7 +92,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary mr-2">Create</button>
-                    <a asp-controller="ProductDetail" asp-action="AllProductDetails" class="btn btn-dark">Cancel</a>
+                    <a asp-controller="ProductDetail" asp-action="AllProductDetails" asp-route-id="@ViewBag.ProductId" class="btn btn-dark">Cancel</a>
 
                 </form>
 
@@ -108,4 +108,19 @@
     <script src="~/assets/vendors/select2/select2.min.js"></script>
     <script src="~/assets/js/file-upload.js"></script>
     <script src="~/assets/js/select2.js"></script>
+    @if (TempData["IsSuccess"] is bool Success)
+    {
+        @if (Success)
+        {
+            <script>
+                showMsgSuccessToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+        else
+        {
+            <script>
+                showMsgDangerToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+    }
 } 

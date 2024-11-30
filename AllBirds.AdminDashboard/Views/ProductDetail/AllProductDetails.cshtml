@@ -1,6 +1,4 @@
-﻿@using AllBirds.DTOs.ProductDetailDTOs
-@model List<GetAllProductDetailsDTOS>
-
+﻿@model List<GetAllProductDetailsDTOS>
 
 @{
     ViewData["Title"] = "Products";
@@ -18,15 +16,34 @@
     <partial name="_FooterPartial" />
 }
 
+@if (TempData["IsSuccess"] is bool Success)
+{
+    @if (Success)
+    {
+        @section Scripts {
+            <script>
+                showMsgSuccessToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+    }
+    else
+    {
+        @section Scripts {
+            <script>
+                showMsgDangerToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+    }
+}
+
 <h1>AllProduct Details</h1>
 
 <div class="row ">
     <div class="col-12 grid-margin">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">AllProduct Details</h4>
+                @* <h4 class="card-title">AllProduct Details</h4> *@
                 <p class="card-description">
-                
                     <a class="btn btn-primary" asp-controller="ProductDetail" asp-route-id="@ViewBag.ProductId" asp-action="Create"><i class="fas fa-plus"></i> New</a>
                 </p>
                 <div class="table-responsive">
@@ -73,7 +90,8 @@
                                     </td>
                                     <td>
                                         <a type="submit" asp-action="Update" asp-controller="ProductDetail" asp-route-id="@prd.Id" class="btn btn-outline-secondary"><i class="fas fa-edit"></i></a>
-                                        <a type="button" asp-action="DeleteProductDetails" asp-controller="ProductDetail" asp-route-id="@prd.Id" class="btn btn-outline-danger"><i class="fas fa-trash-alt"></i></a>
+                                        @* <a type="button" asp-action="DeleteProductDetails" asp-controller="ProductDetail" asp-route-id="@prd.Id" asp-route-ProductId="@ViewBag.ProductId" class="btn btn-outline-danger"><i class="fas fa-trash-alt"></i></a> *@
+                                        <button type="button" class="btn btn-outline-danger" onclick="openModal('Detail', '/ProductDetail/DeleteProductDetails/@prd.Id?ProductId=@ViewBag.ProductId')"><i class="fas fa-trash-alt"></i></button>
                                     </td>
                                 </tr>
                             }

@@ -1,17 +1,72 @@
-﻿@using AllBirds.DTOs.ColorDTOs
+﻿@model GetAll
+@{
+    // int currentPageColor = ViewBag.CurrentPage ?? 1;
+    // int pageSizeColor = ViewBag.PageSize ?? 10;
+    // int totalItemsColor = ViewBag.TotalItems ?? 0;
+    // int totalPagesColor = (int)Math.Ceiling((double)totalItemsColor / pageSizeColor);
 
-@model GetAll
+    // int currentPageSize = ViewBag.CurrentPage ?? 1;
+    // int pageSizeSize = ViewBag.PageSize ?? 10;
+    // int totalItemsSize = ViewBag.TotalItems ?? 0;
+    // int totalPagesSize = (int)Math.Ceiling((double)totalItemsSize / pageSizeSize);
 
+    // int currentPageCoupon = ViewBag.CurrentPage ?? 1;
+    // int pageSizeCoupon = ViewBag.PageSize ?? 10;
+    // int totalItemsCoupon = ViewBag.TotalItems ?? 0;
+    // int totalPagesCoupon = (int)Math.Ceiling((double)totalItemsCoupon / pageSizeCoupon);
 
+    // int currentPageState = ViewBag.CurrentPage ?? 1;
+    // int pageSizeState = ViewBag.PageSize ?? 10;
+    // int totalItemsState = ViewBag.TotalItems ?? 0;
+    // int totalPagesState = (int)Math.Ceiling((double)totalItemsState / pageSizeState);
+}
+@section Navbar {
+
+    <partial name="_NavbarPartial" />
+}
+@section Sidebar {
+
+    <partial name="_SidebarPartial" />
+}
+@section Footer {
+
+    <partial name="_FooterPartial" />
+}
+@if (TempData["IsSuccess"] is bool Success)
+{
+    @if (Success)
+    {
+        @* <div id="msgDiv" class="alert alert-success text-dark" role="alert">
+            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
+        </div> *@
+        @section Scripts {
+            <script>
+                showMsgSuccessToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+    }
+    else
+    {
+        @* <div id="msgDiv" class="alert alert-danger text-dark" role="alert">
+            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
+        </div> *@
+        @section Scripts {
+            <script>
+                showMsgDangerToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+    }
+}
 <div class="row">
     @* ================================= *@
 
     <div class="col-lg-6 grid-margin stretch-card">
         <div class="card">
+
             <div class="card-body">
                 <h4 class="card-title">Color Table</h4>
                 <p class="card-description">
-                    Add class <code>.table</code>
+                    <a class="btn btn-primary" asp-controller="Color" asp-action="Create"><i class="fas fa-plus"></i> New Color</a>
                 </p>
                 <div class="table-responsive">
                     <table class="table">
@@ -20,30 +75,70 @@
                                 <th>Code</th>
                                 <th>NameEn</th>
                                 <th>NameAr</th>
+                                <th>Action</th>
+
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var i in Model.cUColorDTOs)
+                            @if (Model.cUColorDTOs is not null && Model.cUColorDTOs.Count > 0)
+                            {
+                                @foreach (var i in Model.cUColorDTOs)
+                                {
+                                    <tr>
+                                        <td><label class="rounded text-light" style="background-color: @i.Code; width: 35px;height: 35px; border-radius: 50%;"></label></td>
+                                        <td>@i.NameEn</td>
+                                        <td>@i.NameAr</td>
+                                        <td>
+                                            <a type="button" asp-action="Edit" asp-controller="Color" asp-route-id="@i.Id" class="btn btn-outline-secondary"><i class="fas fa-edit"></i></a>
+                                            <a type="button" class="btn btn-outline-danger" asp-controller="Color" asp-route-id="@i.Id" asp-action="Delete"> <i class="fas fa-trash-alt"></i></a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
                             {
                                 <tr>
-                                    <td>@i.Code</td>
-                                    <td>@i.NameEn</td>
-                                    <td>@i.NameAr</td>
-                                  </tr>
+                                    <td colspan="3" class="text-center">No Colors Available</td>
+                                </tr>
                             }
                         </tbody>
                     </table>
                 </div>
+                @* <!-- Pagination -->
+                <nav>
+                    <ul class="pagination d-flex justify-content-center rounded-separated pagination-primary">
+                        <li class="page-item @(currentPageColor == 1 ? "disabled" : "")">
+                            <a class="page-link" asp-action="GetAll" asp-route-pageNumber="@(currentPageColor - 1)" asp-route-pageSize="@pageSizeColor" asp-route-flag="1"><i class="mdi mdi-chevron-left"></i></a>
+                        </li>
+                        @for (int i = 1; i <= totalPagesColor; i++)
+                        {
+                            <li class="page-item @(i == currentPageColor ? "active" : "")">
+                                @if (i == currentPageColor)
+                                {
+                                    <a class="page-link">@i</a>
+                                }
+                                else
+                                {
+                                    <a class="page-link" asp-action="GetAll" asp-route-pageNumber="@i" asp-route-pageSize="@pageSizeColor" asp-route-flag="1">@i</a>
+                                }
+                            </li>
+                        }
+                        <li class="page-item @(currentPageColor == totalPagesColor ? "disabled" : "")">
+                            <a class="page-link" asp-action="GetAll" asp-route-pageNumber="@(currentPageColor + 1)" asp-route-pageSize="@pageSizeColor" asp-route-flag="1"><i class="mdi mdi-chevron-right"></i></a>
+                        </li>
+                    </ul>
+                </nav> *@
             </div>
         </div>
     </div>
     @* ================================= *@
     <div class="col-lg-6 grid-margin stretch-card">
         <div class="card">
+
             <div class="card-body">
                 <h4 class="card-title">Size Table</h4>
                 <p class="card-description">
-                    Add class <code>.table</code>
+                    <a class="btn btn-primary" asp-controller="Size" asp-action="Create"><i class="fas fa-plus"></i> New Size</a>
                 </p>
                 <div class="table-responsive">
                     <table class="table">
@@ -53,10 +148,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var i in Model.cUSizeDTOs)
+                            @if (Model.cUSizeDTOs is not null && Model.cUSizeDTOs.Count > 0)
+                            {
+                                @foreach (var i in Model.cUSizeDTOs)
+                                {
+                                    <tr>
+                                        <td>@i.SizeNumber</td>
+                                        <td>
+                                            <a type="button" asp-action="Edit" asp-controller="Size" asp-route-id="@i.Id" class="btn btn-outline-secondary"><i class="fas fa-edit"></i></a>
+                                            <a type="button" class="btn btn-outline-danger" asp-controller="Size" asp-route-id="@i.Id" asp-action="Delete"> <i class="fas fa-trash-alt"></i></a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
                             {
                                 <tr>
-                                    <td>@i.SizeNumber</td>
+                                    <td colspan="2" class="text-center">No Sizes Available</td>
                                 </tr>
                             }
                         </tbody>
@@ -71,7 +179,7 @@
             <div class="card-body">
                 <h4 class="card-title">Coupon Table</h4>
                 <p class="card-description">
-                    Add class <code>.table</code>
+                    <a class="btn btn-primary" asp-controller="Coupon" asp-action="Create"><i class="fas fa-plus"></i> New Coupon</a>
                 </p>
                 <div class="table-responsive">
                     <table class="table">
@@ -80,15 +188,29 @@
                                 <th>Code</th>
                                 <th>Discount</th>
                                 <th>IsActive</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var i in Model.cUCoupons)
+                            @if (Model.cUCoupons is not null && Model.cUCoupons.Count > 0)
+                            {
+                                @foreach (var i in Model.cUCoupons)
+                                {
+                                    <tr>
+                                        <td>@i.Code</td>
+                                        <td>@i.Discount</td>
+                                        <td>@i.IsActive</td>
+                                        <td>
+                                            <a type="button" asp-action="Edit" asp-controller="Coupon" asp-route-id="@i.Id" class="btn btn-outline-secondary"><i class="fas fa-edit"></i></a>
+                                            <a type="button" class="btn btn-outline-danger" asp-controller="Coupon" asp-route-id="@i.Id" asp-action="Delete"> <i class="fas fa-trash-alt"></i></a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
                             {
                                 <tr>
-                                    <td>@i.Code</td>
-                                    <td>@i.Discount</td>
-                                    <td>@i.IsActive</td>
+                                    <td colspan="4" class="text-center">No Coupons Available</td>
                                 </tr>
                             }
                         </tbody>
@@ -103,7 +225,7 @@
             <div class="card-body">
                 <h4 class="card-title">OrderState Table</h4>
                 <p class="card-description">
-                    Add class <code>.table</code>
+                    <a class="btn btn-primary" asp-controller="OrderState" asp-action="Create"><i class="fas fa-plus"></i> New Order State</a>
                 </p>
                 <div class="table-responsive">
                     <table class="table">
@@ -111,14 +233,28 @@
                             <tr>
                                 <th>StateAr</th>
                                 <th>StateEn</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var i in Model.OrderStateDTOs)
+                            @if (Model.OrderStateDTOs is not null && Model.OrderStateDTOs.Count > 0)
+                            {
+                                @foreach (var i in Model.OrderStateDTOs)
+                                {
+                                    <tr>
+                                        <td>@i.StateAr</td>
+                                        <td>@i.StateEn</td>
+                                        <td>
+                                            <a type="button" asp-action="Edit" asp-controller="OrderState" asp-route-id="@i.Id" class="btn btn-outline-secondary"><i class="fas fa-edit"></i></a>
+                                            <a type="button" class="btn btn-outline-danger" asp-controller="OrderState" asp-route-id="@i.Id" asp-action="Delete"> <i class="fas fa-trash-alt"></i></a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
                             {
                                 <tr>
-                                    <td>@i.StateAr</td>
-                                    <td>@i.StateEn</td>
+                                    <td colspan="3" class="text-center">No Order States Available</td>
                                 </tr>
                             }
                         </tbody>

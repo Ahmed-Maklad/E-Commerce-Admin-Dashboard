@@ -19,13 +19,16 @@
 
     <partial name="_FooterPartial" />
 }
-<h1>CreateProduct</h1>
+<h1>Update Product @Model?.ProductNo</h1>
 
 <div class="row">
     <div class="col-12 grid-margin">
         <div class="card">
             <div class="card-body">
                 @* <h4 class="card-title">CreateProduct</h4> *@
+                <p class="card-description">
+                    <button class="btn btn-primary" onclick="addHighlight()"><i class="fas fa-plus"></i> Add Highlight</button>
+                </p>
                 <form class="form-sample" asp-action="Update">
                     <p class="card-description"> Main Info </p>
                     <div class="row">
@@ -33,7 +36,7 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label" asp-for="ProductNo"></label>
                                 <div class="col-sm-9">
-                                    <input class="form-control" asp-for="ProductNo" />
+                                    <input class="form-control" asp-for="ProductNo" value="@Model.ProductNo"/>
                                     <span class="text-danger" asp-validation-for="ProductNo"></span>
                                 </div>
                             </div>
@@ -130,8 +133,20 @@
                         <div class="col-md-6">
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label" asp-for="HighlightsEn"></label>
-                                <div class="col-sm-9">
-                                    <input class="form-control" asp-for="HighlightsEn" />
+                                <div class="col-sm-9" id="highlightsEnDiv">
+                                    @for (int i = 0; i < Model.HighlightsEn.Count; i++)
+                                    {
+                                        if (i == 0)
+                                        {
+                                            <input class="form-control" name="HighlightsEn" value="@Model.HighlightsEn[i]" />
+                                        }
+                                        else
+                                        {
+                                            <div class="col-sm-12 d-flex align-items-center mt-3" id="newHighDivEn @i">
+                                                <input class="form-control" name="HighlightsEn" value="@Model.HighlightsEn[i]" />
+                                            </div>
+                                        }
+                                    }
                                     @* <span class="text-danger" asp-validation-for="HighlightsEn"></span> *@
                                 </div>
                             </div>
@@ -139,8 +154,25 @@
                         <div class="col-md-6">
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label" asp-for="HighlightsAr"></label>
-                                <div class="col-sm-9">
-                                    <input class="form-control" asp-for="HighlightsAr" />
+                                <div class="col-sm-9" id="highlightsArDiv">
+                                    @for (int i = 0; i < Model.HighlightsAr.Count; i++)
+                                    {
+                                        if (i == 0)
+                                        {
+                                            <input class="form-control" name="HighlightsAr" value="@Model.HighlightsAr[i]" />
+                                        }
+                                        else
+                                        {
+                                            <div class="col-sm-12 d-flex align-items-center mt-3" id="newHighDivAr @i">
+                                                <input class="form-control" name="HighlightsAr" value="@Model.HighlightsAr[i]" />
+                                                <div class="col-md-1 ms-3  d-flex justify-content-end">
+                                                    <button type="button" class="btn btn-outline-danger" onclick="removeCurrentHigh(@i)">
+                                                        <i class="mdi mdi-close"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
                                     @* <span class="text-danger" asp-validation-for="HighlightsAr"></span> *@
                                 </div>
                             </div>
@@ -202,7 +234,82 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    <script src="../../assets/vendors/select2/select2.min.js"></script>
-    <script src="../../assets/js/file-upload.js"></script>
-    <script src="../../assets/js/select2.js"></script>
+    @if (TempData["IsSuccess"] is bool Success)
+    {
+        @if (Success)
+        {
+            <script>
+                showMsgSuccessToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+        else
+        {
+            <script>
+                showMsgDangerToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+    }
+    <script>
+        function removeCurrentHigh(highId) {
+            highlightsEnDiv.removeChild(window.document.getElementById("newHighDivEn " + highId));
+            highlightsArDiv.removeChild(window.document.getElementById("newHighDivAr " + highId));
+        }
+        let highEnId = 1;
+        let highArId = 2;
+        function addHighlight() {
+            let newInputEnDiv = document.createElement("div");
+            newInputEnDiv.className = "col-sm-12 d-flex mt-3 align-items-center";
+            newInputEnDiv.style.color = "coral";
+            // newInputEnDiv.style.marginTop = "10px";
+            newInputEnDiv.id = "newHighDiv" + highEnId;
+
+            let newInputEn = document.createElement("input");
+            newInputEn.className = "form-control text-light";
+            newInputEn.type = "text";
+            newInputEn.name = "HighlightsEn";
+
+            newInputEnDiv.appendChild(newInputEn);
+
+            highlightsEnDiv.appendChild(newInputEnDiv);
+
+            let newInputArDiv = document.createElement("div");
+            newInputArDiv.className = "col-sm-12 d-flex mt-3 align-items-center";
+            newInputArDiv.style.color = "coral";
+            // newInputArDiv.style.marginTop = "10px";
+            newInputArDiv.id = "newHighDiv" + highArId;
+
+            let newInputAr = document.createElement("input");
+            newInputAr.className = "form-control text-light";
+            newInputAr.type = "text";
+            newInputAr.name = "HighlightsAr";
+
+            let RemoveInput = document.createElement("div");
+            RemoveInput.className = "col-md-1 mg-2 d-flex ms-3 justify-content-end";
+            // RemoveInput.style.marginLeft = "25px";
+
+            let button = document.createElement("button");
+            button.className = "btn btn-outline-danger";
+            button.onclick = function () {
+                highlightsEnDiv.removeChild(window.document.getElementById("newHighDiv" + highEnId));
+                highlightsArDiv.removeChild(newInputArDiv);
+            };
+
+            let icon = document.createElement("i");
+            icon.className = "mdi mdi-close";
+            button.appendChild(icon);
+
+            RemoveInput.appendChild(button);
+
+            newInputArDiv.appendChild(newInputAr);
+            newInputArDiv.appendChild(RemoveInput);
+
+            highlightsArDiv.appendChild(newInputArDiv);
+
+            highEnId + 2;
+            highArId + 2;
+        }
+    </script>
+    <script src="~/assets/vendors/select2/select2.min.js"></script>
+    <script src="~/assets/js/file-upload.js"></script>
+    <script src="~/assets/js/select2.js"></script>
 } 

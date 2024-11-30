@@ -11,6 +11,9 @@ namespace AllBirds.Infrastructure
 {
     public class AccountRoleRepository(AllBirdsContext context) : IAccountRoleRepository
     {
+        public Task<IdentityUserRole<int>> DeleteAsync(IdentityUserRole<int> identityUserRole) => Task.FromResult(context.AccountRoles.Remove(identityUserRole).Entity);
+
+        public Task<int> SaveChangesAsync() => context.SaveChangesAsync();
         public Task<IQueryable<IdentityUserRole<int>>> GetAllAccountRolesAsync() => Task.FromResult((IQueryable<IdentityUserRole<int>>)context.AccountRoles);
     }
 }

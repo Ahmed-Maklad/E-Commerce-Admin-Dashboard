@@ -1,19 +1,19 @@
-﻿@using AllBirds.DTOs.ColorDTOs
-@model CUColorDTO
+﻿ @using AllBirds.DTOs.ColorDTOs
+ @model CUColorDTO
 
-<div class="card">
-    <div class="card-body">
-        <h4 class="card-title">Delete Color</h4>
-        <p class="card-description">Are you sure you want to delete this color?</p>
+ <div class="card">
+     <div class="card-body">
+         <h4 class="card-title">Delete Color</h4>
+         <p class="card-description">Are you sure you want to delete this color?</p>
 
-        <form asp-action="Delete" method="post" class="forms-sample">
-            <input type="hidden" name="id" value="@Model.Id" />
+         <form asp-action="Delete" method="post" class="forms-sample">
+             <input type="hidden" name="id" value="@Model.Id" />
 
-            <p>Color Name: @Model.NameEn</p>
+             <p>Color Name: @Model.NameEn</p>
 
-            <button type="submit" class="btn btn-warning mr-2">Soft Delete</button>
-            <button formaction="@Url.Action("HardDelete", "Color", new { id = Model.Id })" class="btn btn-danger mr-2">Hard Delete</button>
-            <a href="@Url.Action("Index", "Color")" class="btn btn-dark">Cancel</a>
-        </form>
-    </div>
-</div>
+             <button type="submit" class="btn btn-warning mr-2">Soft Delete</button>
+             <button formaction="@Url.Action("HardDelete", "Color", new { id = Model.Id })" class="btn btn-danger mr-2">Hard Delete</button>
+             <a href="@Url.Action("Index", "Color")" class="btn btn-dark">Cancel</a>
+         </form>
+     </div>
+ </div>

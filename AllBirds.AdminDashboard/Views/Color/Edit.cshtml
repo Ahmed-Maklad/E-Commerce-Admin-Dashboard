@@ -1,19 +1,51 @@
-﻿@using AllBirds.DTOs.ColorDTOs
-@model CUColorDTO
+﻿@model CUColorDTO
+
+@section Navbar {
+
+    <partial name="_NavbarPartial" />
+}
+@section Sidebar {
+
+    <partial name="_SidebarPartial" />
+}
+@section Footer {
+
+    <partial name="_FooterPartial" />
+}
+
+@if (TempData["IsSuccess"] is bool Success)
+{
+    @if (!Success)
+    {
+        <div id="msgDiv" class="alert alert-danger text-dark" role="alert">
+            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
+        </div>
+    }
+
+}
+
+<h1 class="card-title">Update Color</h1>
 
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title">Edit Color</h4>
-        <p class="card-description">Use this form to edit the color</p>
+        @* <h4 class="card-title">Edit Color</h4>
+        <p class="card-description">Use this form to edit the color</p> *@
 
-        <form asp-action="Edit" method="post" class="forms-sample">
+        <form asp-action="Edit" method="post" asp-controller="Color" class="forms-sample">
             <div class="form-group">
-                <label for="ColorName">Color Name</label>
-                <input type="text" class="form-control" id="ColorName" name="Name" value="@Model.NameEn" placeholder="Enter color name" />
+                <label style="margin-top:6px" for="ColorName">Color NameEn</label>
+                <input style="margin-top:4px" class="form-control" asp-for=" NameEn" value="@Model.NameEn" />
+                <span asp-validation-for="NameEn" class="text-danger"></span>
+                <label style="margin-top:6px" for="ColorName">Color NameAr</label>
+                <input style="margin-top:4px" class="form-control" asp-for="NameAr" value="@Model.NameAr" />
+                <span asp-validation-for="NameAr" class="text-danger"></span>
+                <label style="margin-top:6px" for="ColorName">Color Code</label>
+                <input style="margin-top:4px" type="color" class="form-control" id="ColorName" name="Code" value="@Model.Code" />
+                <span asp-validation-for="Code" class="text-danger"></span>
             </div>
 
             <button type="submit" class="btn btn-primary mr-2">Update</button>
-            <a href="@Url.Action("Index", "Color")" class="btn btn-dark">Cancel</a>
+            <a asp-controller="Color" asp-action="GetALLForC_CO_S_OS" class="btn btn-dark">Cancel</a>
         </form>
     </div>
 </div>

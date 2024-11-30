@@ -15,6 +15,7 @@ using AllBirds.DTOs.ProductSpecificationDTOs;
 using AllBirds.DTOs.SizeDTOs;
 using AllBirds.DTOs.SpecificationDTOs;
 using AllBirds.DTOs.ProductColorImageDTOs;
+using AllBirds.DTOs.ProductColorSizeDTOs;
 namespace AllBirds.Application.Mapper
 {
     public class AutoMapperProfile : Profile
@@ -23,11 +24,15 @@ namespace AllBirds.Application.Mapper
         {
             #region Account
             CreateMap<CUAccountDTO, CustomUser>().ReverseMap();
+            CreateMap<ClientRegisterDTO, CustomUser>().ReverseMap();
             CreateMap<AccountLoginDTO, CustomUser>().ReverseMap();
             CreateMap<CustomUser, GetAllAdminsDTO>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName ?? "NA"))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName ?? "NA"))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber ?? "NA"))
                 .ReverseMap();
+            CreateMap<CustomUser, ClientDetailsDTO>()
+                .ForMember(dest => dest.ZipCode, opt => opt.MapFrom(src => src.PostalCode));
             #endregion
 
             #region Category
@@ -63,39 +68,66 @@ namespace AllBirds.Application.Mapper
             #endregion
 
             #region OrderDetail
-            //CreateMap<GetAllBookAuthorDTO, BookAuthor>().ReverseMap()
-            //    .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.Name));
             CreateMap<GetAllOrderDetailsDTO, OrderDetail>().ReverseMap()
                 .ForMember(dest=>dest.OrderMasterNo,opt=>opt.MapFrom(src=>src.OrderMaster.OrderNo));
+
             CreateMap<GetOneOrderDetailsDTO, OrderDetail>().ReverseMap();
-            CreateMap<CreateOrderDetailsDTO, OrderDetail>().ReverseMap();
-            CreateMap<OrderDetail,ProductColorSizeImageDTO>()
-                .ForMember(dest=>dest.ColorNameAR,opt=>opt.MapFrom(src=>src.ProductColorSize.ProductColor.Color.NameAr))
-                .ForMember(dest=>dest.ColorNameEN,opt=>opt.MapFrom(src=>src.ProductColorSize.ProductColor.Color.NameEn))
-                .ForMember(dest=>dest.ProductNameAR,opt=>opt.MapFrom(src=>src.ProductColorSize.ProductColor.Product.NameAr))
-                .ForMember(dest=>dest.ProductNameEN,opt=>opt.MapFrom(src=>src.ProductColorSize.ProductColor.Product.NameEn))
-                .ForMember(dest=>dest.Size,opt=>opt.MapFrom(src=>src.ProductColorSize.Size.SizeNumber))
-                .ForMember(dest=>dest.MainImage,opt=>opt.MapFrom(src=>src.ProductColorSize.ProductColor.Images.FirstOrDefault().ImagePath))
+
+            CreateMap<CreateOrderDetailDTO, OrderDetail>()
+                .ForMember(dest => dest.ProductColorSizeId, opt => opt.MapFrom(src => src.ProductId));
+
+            CreateMap<OrderDetail, CreateOrderDetailDTO>()
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductColorSizeId));
+
+            // CreateMap<OrderDetail,ProductColorSizeImageDTO>()
+            //     .ForMember(dest => dest.ColorNameAR, opt => opt.MapFrom(src => src.ProductColorSize.ProductColor.Color.NameAr))
+            //     .ForMember(dest => dest.ColorNameEN, opt => opt.MapFrom(src => src.ProductColorSize.ProductColor.Color.NameEn))
+            //     .ForMember(dest => dest.ProductNameAR, opt => opt.MapFrom(src => src.ProductColorSize.ProductColor.Product.NameAr))
+            //     .ForMember(dest => dest.ProductNameEN, opt => opt.MapFrom(src => src.ProductColorSize.ProductColor.Product.NameEn))
+            //     .ForMember(dest => dest.Size, opt => opt.MapFrom(src => src.ProductColorSize.Size.SizeNumber))
+            //     .ForMember(dest => dest.MainImage, opt => opt.MapFrom(src => src.ProductColorSize.ProductColor.Images.FirstOrDefault().ImagePath));
+
+            //CreateMap<OrderDetail, GetAllCartCheckoutDetailsDTO>()
+            //    .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.ProductColorSize.ProductColor.Product.NameEn))
+            //    .ForMember(dest => dest.ColorName, opt => opt.MapFrom(src => src.ProductColorSize.ProductColor.Color.NameEn))
+            //    .ForMember(dest => dest.SizeNumber, opt => opt.MapFrom(src => src.ProductColorSize.Size.SizeNumber))
+            //    .ForMember(dest => dest.ImagePath, opt => opt.MapFrom(src => src.ProductColorSize.ProductColor.Images
+            //    .FirstOrDefault(i => i.Id == src.ProductColorSize.ProductColor.MainImageId).ImagePath));
+
+            CreateMap<OrderDetail, ProductColorSizeImageDTO>()
+                .ForMember(dest => dest.ColorNameAR, opt => opt.MapFrom(src => src.ProductColorSize.ProductColor.Color.NameAr))
+                .ForMember(dest => dest.ColorNameEN, opt => opt.MapFrom(src => src.ProductColorSize.ProductColor.Color.NameEn))
+                .ForMember(dest => dest.ProductNameAR, opt => opt.MapFrom(src => src.ProductColorSize.ProductColor.Product.NameAr))
+                .ForMember(dest => dest.ProductNameEN, opt => opt.MapFrom(src => src.ProductColorSize.ProductColor.Product.NameEn))
+                .ForMember(dest => dest.Size, opt => opt.MapFrom(src => src.ProductColorSize.Size.SizeNumber))
+                .ForMember(dest => dest.MainImage, opt => opt.MapFrom(src => src.ProductColorSize.ProductColor.Images.FirstOrDefault().ImagePath))
                 ;
             #endregion
 
             #region OrderMaster
-            //CreateMap<GetAllBookAuthorDTO, BookAuthor>().ReverseMap()
-            //    .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.Name));
-
-
             CreateMap<GetAllOrderMastersDTO, OrderMaster>().ReverseMap()
-                  .ForMember(dest => dest.ClientName, opt => opt.MapFrom(src => $"{src.Client.FirstName} {src.Client.LastName}"))
+                  .ForMember(dest => dest.ClientName, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.Client.FirstName) ? "NA" : $"{src.Client.FirstName} {src.Client.LastName}"))
                 .ForMember(dest => dest.OrderStateName, opt => opt.MapFrom(src => src.OrderState.StateEn))
-                .ForMember(dest => dest.DiscountPerctnage, opt => opt.MapFrom(src => $"{src.Coupon.Discount} %"))
+                .ForMember(dest => dest.DiscountPerctnage, opt => opt.MapFrom(src => src.Coupon == null ? "0%" : $"{src.Coupon.Discount} %"))
                 .ForMember(dest => dest.DiscountAmount, opt => opt.MapFrom(src => src.Coupon.Discount * src.Total));
 
-            CreateMap<createOrderMasterDTO, OrderMaster>().ReverseMap();
-            CreateMap<GetOneOdrerMasterDTO, OrderMaster>().ReverseMap()
+            CreateMap<CreateOrderMasterDTO, OrderMaster>()
+                .ForMember(dest => dest.OrderNo, opt => opt.MapFrom(src => $"OM-{src.ClientId}{(int)src.Total}{string.Join("", src.ProductColorSizeId.Select(p => $"{p.ProductId}{p.Quantity}"))}{DateTime.Now.ToShortDateString()}"));
+            //.ForMember(dest => dest.OrderDetails, opt => opt.MapFrom(src => src.ProductColorSizeId));
+
+            CreateMap<OrderMaster, CreateOrderMasterDTO>()
+                .ForMember(dest => dest.ProductColorSizeId, opt => opt.MapFrom(src => src.OrderDetails));
+
+            CreateMap<GetOneOrderMasterDTO, OrderMaster>().ReverseMap()
                 .ForMember(dest => dest.ClientName, opt => opt.MapFrom(src => $"{src.Client.FirstName} {src.Client.LastName}"))
                 .ForMember(dest => dest.OrderStateName, opt => opt.MapFrom(src => src.OrderState.StateEn))
                 .ForMember(dest => dest.DiscountPerctnage, opt => opt.MapFrom(src => $"{src.Coupon.Discount} %"))
                 .ForMember(dest => dest.DiscountAmount, opt => opt.MapFrom(src => src.Coupon.Discount * src.Total));
+
+            CreateMap<OrderMaster, GetUserCartCheckoutDTO>()
+                .ForMember(dest => dest.CouponCode, opt => opt.MapFrom(src => src.Coupon.Code));
+                //.ForMember(dest => dest.OrderStateNameEn, opt => opt.MapFrom(src => src.OrderState.StateEn))
+                //.ForMember(dest => dest.OrderStateNameAr, opt => opt.MapFrom(src => src.OrderState.StateAr));
             #endregion
 
             #region OrderState
@@ -138,10 +170,10 @@ namespace AllBirds.Application.Mapper
             #region ProductColor
 
             CreateMap<ProductColor, CreateProductColorDTO>()
-                        .ForMember(dest => dest.Images, opt => opt.Ignore()); 
+                        .ForMember(dest => dest.Images, opt => opt.Ignore());
 
             CreateMap<CreateProductColorDTO, ProductColor>()
-                .ForMember(dest => dest.Images, opt => opt.Ignore()); 
+                .ForMember(dest => dest.Images, opt => opt.Ignore());
             CreateMap<UpdateProductColorDTO, ProductColor>().ReverseMap();
             CreateMap<GetALlProductColorDTO, ProductColor>().ReverseMap()
                 .ForMember(dest => dest.ColorNameAr, opt => opt.MapFrom(src => src.Color.NameAr))
@@ -150,7 +182,7 @@ namespace AllBirds.Application.Mapper
                 .ForMember(dest => dest.PNameAr, opt => opt.MapFrom(src => src.Product.NameAr))
                 .ForMember(dest => dest.PNameEn, opt => opt.MapFrom(src => src.Product.NameEn))
                 .ForMember(dest => dest.ProductNo, opt => opt.MapFrom(src => src.Product.ProductNo))
-                .ForMember(dest=>dest.MainImagePath,opt=>opt.MapFrom(src=>src.Images.FirstOrDefault(p=>p.Id==src.MainImageId).ImagePath));
+                .ForMember(dest => dest.MainImagePath, opt => opt.MapFrom(src => src.Images.FirstOrDefault(p => p.Id == src.MainImageId).ImagePath));
             CreateMap<GetOneProductColorDTO, ProductColor>().ReverseMap()
                 .ForMember(dest => dest.ColorNameAr, opt => opt.MapFrom(src => src.Color.NameAr))
                 .ForMember(dest => dest.ColorNameEn, opt => opt.MapFrom(src => src.Color.NameEn))
@@ -159,21 +191,32 @@ namespace AllBirds.Application.Mapper
                 .ForMember(dest => dest.PNameEn, opt => opt.MapFrom(src => src.Product.NameEn))
                 .ForMember(dest => dest.ProductNo, opt => opt.MapFrom(src => src.Product.ProductNo))
                 .ForMember(dest => dest.MainImagePath, opt => opt.MapFrom(src => src.Images.FirstOrDefault(p => p.Id == src.MainImageId).ImagePath))
-                .ForMember(dest=>dest.Sizes,opt=>opt.MapFrom(src=>src.AvailableSizes.Select(r=>r.Size.SizeNumber).ToList()))
-                .ForMember(dest=>dest.Images,opt=>opt.MapFrom(src=>src.Images.Select(r=>r.ImagePath).ToList()));
+                .ForMember(dest => dest.Sizes, opt => opt.MapFrom(src => src.AvailableSizes.Select(r => r.Size.SizeNumber).ToList()))
+                .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.Select(r => r.ImagePath).ToList()))
+                .ForMember(dest => dest.ProductColorImageId, opt => opt.MapFrom(src => src.Images.Select(r => r.Id).ToList()));
 
-            //CreateMap<GetAllBookAuthorDTO, BookAuthor>().ReverseMap()
-            //    .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.Name));
+
+
+
+                            // CreateMap<Product, ProductCardDTO>()
+                            //.ForMember(dest => dest.ProductColors, opt => opt.MapFrom(src => src.AvailableColors.Where(prdId => prdId.ProductId == src.Id).SelectMany(ac => ac.Images).Select(Img => Img.ImagePath)))
+                            //.ForMember(dest => dest.PrdouctSizes, opt => opt.MapFrom(src => src.AvailableColors.Where(color => color.ProductId == src.Id).SelectMany(color => color.AvailableSizes.Where(size => size.ProductColorId == color.Id).Select(size => size.Size.SizeNumber))));
+
             #endregion
 
             #region ProductColorImage
-            CreateMap<ProductColorImage, CUProductColorImageDTO> ().ForMember(dest => dest.ImageData, opt => opt.Ignore()).ReverseMap();
+            CreateMap<ProductColorImage, CUProductColorImageDTO>().ForMember(dest => dest.ImageData, opt => opt.Ignore()).ReverseMap();
             CreateMap<ProductColorImage, GetAllCategoryProductDTO>().ReverseMap();
             #endregion
 
             #region ProductColorSize
-            //CreateMap<GetAllBookAuthorDTO, BookAuthor>().ReverseMap()
-            //    .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.Name));
+            CreateMap<CreatePCSDTO, ProductColorSize>();
+            CreateMap<ProductColorSize, CreatePCSDTO>();
+            CreateMap<UpdatePCSDTO, ProductColorSize>();
+            CreateMap<ProductColorSize, UpdatePCSDTO>();
+            CreateMap<ProductColorSize, GetPCSDTO>()
+                .ForMember(dest => dest.ProductColorSizeId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.SizeNumber, opt => opt.MapFrom(src => src.Size.SizeNumber));
             #endregion
 
             #region ProductDetail

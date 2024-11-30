@@ -10,6 +10,7 @@ using AllBirds.Application.Services.OrderMasterServices;
 using AllBirds.Application.Services.OrderStateServices;
 using AllBirds.Application.Services.ProductColorImageServices;
 using AllBirds.Application.Services.ProductColorServices;
+using AllBirds.Application.Services.ProductColorSizeServices;
 using AllBirds.Application.Services.ProductDetailService;
 using AllBirds.Application.Services.ProductServices;
 using AllBirds.Application.Services.ProductSpecificationServices;
@@ -69,12 +70,14 @@ namespace AllBirds.AdminDashboard
             builder.Services.AddScoped<IProductColorImageRepository, ProductColorImageRepository>();
             builder.Services.AddScoped<IProductColotImageService, ProductColorImageService>();
             // ProductColorSize
-
+            builder.Services.AddScoped<IProductColorSizeService, ProductColorSizeService>();
+            builder.Services.AddScoped<IProductColorSizeRepository, ProductColorSizeRepository>();
             // ProductDetail
             builder.Services.AddScoped<IProductDetailsService, ProductDetailsService>();
             builder.Services.AddScoped<IProductDetailsRepository, ProductDetailsRepository>();
             // ProductReview
-
+            //builder.Services.AddScoped<IProductReviewService, ProductReviewService>();
+            //builder.Services.AddScoped<IProductReviewRepository, ProductReviewRepository>();
             // ProductSpecification
             builder.Services.AddScoped<IProductSpecificationService, ProductSpecificationService>();
             builder.Services.AddScoped<IProductSpecificationRepository, ProductSpecificationRepository>();

@@ -1,7 +1,29 @@
 ﻿@model List<GetAllOrderMastersDTO>
 @{
     ViewData["Title"] = "GetAllOrderMasters";
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int pageSize = ViewBag.PageSize ?? 10;
+    int totalItems = ViewBag.TotalItems ?? 0;
+    int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
     SelectList OrderState = new(ViewBag.OrderSate, "Id", "StateEn");
+    Dictionary<int, string> orderStateColors = new()
+    {
+        {2, "warning text-dark"},
+        {3, "secondary text-dark"},
+        {4, "info"},
+        {5, "primary"},
+        {6, "success text-dark"},
+        {7, "danger"}
+    };
+    Dictionary<int, string> orderStatePercentages = new()
+    {
+        {2, "20"},
+        {3, "40"},
+        {4, "60"},
+        {5, "80"},
+        {6, "100"},
+        {7, "100"}
+    };
 }
 
 @section Navbar {
@@ -28,93 +50,108 @@
                             <th> Client Name </th>
                             <th> Progress </th>
                             <th>Order state</th>
-                            <th>Coupon</th>
-
-                            <th> Amount </th>
-                            <th> Action </th>
+                            <th>Coupon Discount %</th>
+                            <th> Order Total </th>
+                            <th> Change State </th>
                         </tr>
                     </thead>
                     <tbody>
                         @if(Model is not null)
                         {
-                            
-                        @foreach(var item in Model)
-                        {
-
-                        <tr>
-                            
-                            <td>@item.OrderNo </td>
-                                <td>@item.ClientName </td>
-                            <td>
-                               @if (item.OrderStateId == 1)
-                                {
-                                    <div class="progress">
-                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                }
-                               else if (item.OrderStateId == 2)
-                                {
-                                    <div class="progress">
-                                        <div class="progress-bar bg-secondary" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                }
-                               else if (item.OrderStateId == 3)
-                                {
-                                    <div class="progress">
-                                        <div class="progress-bar bg-info" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="progress">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                }
-
-                            </td>
-
-                            <td>
-                                @if (item.OrderStateId == 1)
-                                {
-                                        <label class="badge badge-primary">@item.OrderStateName</label>
-                                }
-                                    else if (item.OrderStateId == 2)
-                                {
-
-                                        <label class="badge badge-secondary">@item.OrderStateName</label>
-
-                                }
-                                    else if (item.OrderStateId == 3)
-                                {
-                                        <label class="badge badge-info">@item.OrderStateName</label>
-
-                                }
-                                else
-                                {
-
-                                        <label class="badge badge-success">@item.OrderStateName</label>
-
-                                }
-                             </td>
-                                <td> @item.DiscountPerctnage +"%" </td>
-                                <td> @item.Total</td>
-                            <td>
-             @*                     <button class="btn btn-inverse-success for inverse buttons p-2  m-1" onclick="changingState(3,@Model.Id)">Aprove</button>
-                                 <button class="btn btn-inverse-danger  for inverse buttons p-2  m-1" onclick="changingState(4,@Model.Id)">Rejecte</button> *@
-
-                                <div class="mb-3" >
-                                        <select class="form-select bg-warning text-dark" aria-label="Action select" style="width: auto; "  asp-items="OrderState" onchange="changingState(this.value, @item.Id)">
-                                     </select> 
-                                </div>
-                            </td>
-                        </tr>
-                            
+                            @foreach(var item in Model)
+                            {
+                                <tr id="row-@item.Id">
+                                    <td>@item.OrderNo </td>
+                                    <td>@item.ClientName </td>
+                                    <td>
+                                        @if (item.OrderStateId == 2)
+                                        {
+                                            <div class="progress">
+                                                <div class="progress-bar bg-warning" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        }
+                                        else if (item.OrderStateId == 3)
+                                        {
+                                            <div class="progress">
+                                                <div class="progress-bar bg-secondary" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        }
+                                        else if (item.OrderStateId == 4)
+                                        {
+                                            <div class="progress">
+                                                <div class="progress-bar bg-info" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        }
+                                        else if (item.OrderStateId == 5)
+                                        {
+                                            <div class="progress">
+                                                <div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        }
+                                        else if (item.OrderStateId == 6)
+                                        {
+                                            <div class="progress">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="progress">
+                                                <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.OrderStateId == 2)
+                                        {
+                                            <label class="badge badge-warning">@item.OrderStateName</label>
+                                        }
+                                        else if (item.OrderStateId == 3)
+                                        {
+                                            <label class="badge badge-secondary text-dark">@item.OrderStateName</label>
+                                        }
+                                        else if (item.OrderStateId == 4)
+                                        {
+                                            <label class="badge badge-info">@item.OrderStateName</label>
+                                        }
+                                        else if (item.OrderStateId == 5)
+                                        {
+                                            <label class="badge badge-primary">@item.OrderStateName</label>
+                                        }
+                                        else if (item.OrderStateId == 6)
+                                        {
+                                            <label class="badge badge-success  text-dark">@item.OrderStateName</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="badge badge-danger">@item.OrderStateName</label>
+                                        }
+                                    </td>
+                                    <td> @item.DiscountPerctnage</td>
+                                    <td> $@item.Total</td>
+                                    <td class="d-flex flex-row gap-2">
+                                        <a type="button" asp-action="GetDetails" asp-controller="OrderMaster" asp-route-orderId="@item.Id" class="btn btn-inverse-primary d-flex align-items-center"><i class="fas fa-eye"></i></a>
+                                        <select id="orderStateSelect" class="form-select bg-light text-dark" aria-label="Action select" style="width: auto;" onchange="changingState(this.value, @item.Id, this.options[this.selectedIndex].text, this.value - @item.OrderStateId)">@* this.value > @item.OrderStateId ? 20 : -20 *@
+                                            @foreach (CUOrderStateDTO state in ViewBag.OrderSate)
+                                            {
+                                                @if (state.Id == item.OrderStateId)
+                                                {
+                                                    <option value="@state.Id" selected>@state.StateEn</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@state.Id">@state.StateEn</option>
+                                                }
+                                            }
+                                        </select> 
+                                    </td>
+                                </tr>
                             }
                         }
                         else
                         {
                             <tr>
-                                <td colspan="7">
+                                <td colspan="7" class="text-center">
                                     No Orders Found
                                 </td>
                             </tr>
@@ -124,28 +161,79 @@
                 </table>
             </div>
         </div>
+        <!-- Pagination -->
+        <nav>
+            <ul class="pagination d-flex justify-content-center rounded-separated pagination-primary">
+                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="GetAllOrderMasters" asp-route-pageNumber="@(currentPage - 1)" asp-route-pageSize="@pageSize"><i class="mdi mdi-chevron-left"></i></a>
+                </li>
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        @if (i == currentPage)
+                        {
+                            <a class="page-link">@i</a>
+                        }
+                        else
+                        {
+                            <a class="page-link" asp-action="GetAllOrderMasters" asp-route-pageNumber="@i" asp-route-pageSize="@pageSize">@i</a>
+                        }
+                    </li>
+                }
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="GetAllOrderMasters" asp-route-pageNumber="@(currentPage + 1)" asp-route-pageSize="@pageSize"><i class="mdi mdi-chevron-right"></i></a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </div>
 
-
- <script>
-   
-
-
-
-    function changingState(state, orderID) {
-        $.ajax({
-            url: `/OrderMaster/changingState/?stateID=${state}&&orderID=${orderID}`,
-            type: 'GET',
-              success: function (res) {
-                console.log("State changed successfully for Order ID: ", orderID);
-                // Optional: If you want to reload part of the page or update a section
-                // $("#Table").html(res);
-            },
-            error: function (err) {
-                console.error("Error changing state", err);
-            }
-        });
+@section Scripts {
+    @if (TempData["IsSuccess"] is bool Success)
+    {
+        @if (Success)
+        {
+            <script>
+                showMsgSuccessToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+        else
+        {
+            <script>
+                showMsgDangerToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
     }
+     <script>
+        let oldState = orderStateSelect.value;
+        function changingState(state, orderID, newStateName, increaseOrDecrease) {
+            let rowChanged = window.document.getElementById('row-' + orderID);
+            let classesObject = @Html.Raw(Json.Serialize(orderStateColors));
+            let percentagesObject = @Html.Raw(Json.Serialize(orderStatePercentages));
+            $.ajax({
+                url: `/OrderMaster/changingState/?stateID=${state}&&orderID=${orderID}`,
+                type: 'GET',
+                    success: function (res) {
+                        if (res.success) {
+                            rowChanged.children[2].children[0].children[0].setAttribute("class", `progress-bar bg-${classesObject[state]}`);
+                            rowChanged.children[2].children[0].children[0].setAttribute("style", `width: ${percentagesObject[state]}%;`);
+                            rowChanged.children[2].children[0].children[0].setAttribute("aria-valuenow", percentagesObject[state]);
+                            rowChanged.children[3].children[0].setAttribute("class", `badge badge-${classesObject[state]}`);
+                            rowChanged.children[3].children[0].textContent = newStateName;
+                            oldState = state;
+                            showMsgSuccessToast(res.message);
+                        }
+                        else {
+                            showMsgDangerToast(res.message);
+                            orderStateSelect.value = oldState;
+                        }
+                },
+                error: function (err) {
+                    showMsgDangerToast(res.message);
+                    orderStateSelect.value = oldState;
+                }
+            });
+        }
 
-</script>
+    </script>
+}

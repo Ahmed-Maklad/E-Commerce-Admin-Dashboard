@@ -10,9 +10,9 @@ namespace AllBirds.DTOs.OrderDetailsDTOs
     {
         public string? ColorNameAR { get; set; }
         public string? ColorNameEN { get; set; }
-        public string ?ProductNameEN { get; set; }
-        public string ?ProductNameAR { get; set; }
-        public string ?Size { get; set; }
+        public string? ProductNameEN { get; set; }
+        public string? ProductNameAR { get; set; }
+        public string? Size { get; set; }
         public string? MainImage { get; set; }
 
     }

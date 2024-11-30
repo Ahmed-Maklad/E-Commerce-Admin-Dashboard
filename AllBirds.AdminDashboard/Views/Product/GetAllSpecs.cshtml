@@ -19,14 +19,14 @@
 <link rel="stylesheet" href="~/assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css">
 <!-- End plugin css for this page -->
 
-<div id="msgDiv" class="alert alert-success text-dark" role="alert"> <span>@Model.Msg</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button></div>
+@* <div id="msgDiv" class="alert alert-success text-dark" role="alert"> <span>@Model.Msg</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button></div> *@
 
-<h1>GetAllSpecs</h1>
+<h1>Product Specifications</h1>
 <div class="row">
     <div class="col-lg-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Basic Table</h4>
+                @* <h4 class="card-title"><a class="btn btn-primary" asp-controller="Product" asp-action="AddProductSpec"><i class="fas fa-plus"></i> New</a></h4> *@
                 <p class="card-description">
                     <button id="newBtn" class="btn btn-primary" onclick='addNewRow()'><i class="fas fa-plus"></i> New Specification</button>
                     @* <a class="btn btn-primary" asp-controller="Product" asp-action="AddProductSpec"><i class="fas fa-plus"></i> New</a> *@
@@ -54,7 +54,8 @@
                                         <td>@prdSpec.ContentEn | @prdSpec.ContentAr</td>
                                         <td>
                                             <button type="button" class="btn btn-outline-secondary" onclick="openPrdSpecToEdit(event)"><i class="fas fa-edit"></i></button>
-                                            <a asp-action="DeletePrdSpec" asp-controller="Product" asp-route-id="@prdSpec.Id" class="btn btn-outline-danger"><i class="fas fa-trash-alt"></i></a>
+                                            @* <a asp-action="DeletePrdSpec" asp-controller="Product" asp-route-id="@prdSpec.Id" class="btn btn-outline-danger"><i class="fas fa-trash-alt"></i></a> *@
+                                            <button type="button" class="btn btn-outline-danger" prdSpecId="@prdSpec.Id" onclick="openModal('Specification', '/Product/DeletePrdSpec/@prdSpec.Id')"><i class="fas fa-trash-alt"></i></button>
                                         </td>
                                     </tr>
                                 }                                
@@ -77,6 +78,21 @@
 @section Scripts {
     <script src="~/assets/vendors/select2/select2.min.js"></script>
     <script src="~/assets/js/select2.js"></script>
+    @if (TempData["IsSuccess"] is bool Success)
+    {
+        @if (Success)
+        {
+            <script>
+                showMsgSuccessToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+        else
+        {
+            <script>
+                showMsgDangerToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+    }
     <script>
         let tBody = document.getElementsByTagName("tbody");
         console.log(tBody);
@@ -151,11 +167,17 @@
                         specSelectTd.textContent = specSelectTd.children[0].selectedOptions[0].textContent;
                         lastTd.innerHTML = `<button type="button" class="btn btn-outline-secondary" onclick="openPrdSpecToEdit(event)"><i class="fas fa-edit"></i></button>
                             <a href="/Product/DeletePrdSpec/${res.id}" class="btn btn-outline-danger"><i class="fas fa-trash-alt"></i></a>`;
-                        msgDiv.style = "display: block;";
-                        msgDiv.children[0].textContent = res.message;
+                        // msgDiv.style = "display: block;";
+                        // msgDiv.setAttribute("class", "alert alert-success text-dark");
+                        // msgDiv.children[0].textContent = res.message;
+                        showMsgSuccessToast(res.message);
                     }
                     else {
-                        alert(res.message);
+                        // msgDiv.setAttribute("class", "alert alert-danger text-dark");
+                        // msgDiv.style = "display: block;";
+                        // msgDiv.children[0].textContent = res.message;
+                        showMsgDangerToast(res.message);
+                        // alert(res.message);
                     }
                 }
             });
@@ -163,9 +185,15 @@
         let oldContent = "";
         let oldSpecName = "";
         let latestPrdSpecIdClicked = 0;
+        let isOpenSomewhere = false;
         function openPrdSpecToEdit(evt) {
+            if (isOpenSomewhere) {
+                return;
+            }
+            isOpenSomewhere = true;
             let lastTd = evt.target.children.length ? evt.target.parentElement : evt.target.parentElement.parentElement;
-            let prdSpecId = lastTd.children[1].href.split("/").reverse()[0];
+            let prdSpecId = lastTd.children[1]getAttribute("prdSpecId");
+            // let prdSpecId = lastTd.children[1].href.split("/").reverse()[0];
             latestPrdSpecIdClicked = prdSpecId;
             lastTd.innerHTML = `<button type="button" onclick="saveEdit(event)" class="btn btn-outline-success"><i class="fas fa-check"></i></button>
                                 <button type="button" onclick="cancelEdit(event)" class="btn btn-outline-danger"><i class="fas fa-cancel"></i></button>`;
@@ -187,6 +215,7 @@
             specTd.innerHTML = `<select class="js-example-basic-single" style="width: 100%" >${specsOptions}</select>`;
         }
         function cancelEdit(evt) {
+            isOpenSomewhere = false;
             let lastTd = evt.target.children.length ? evt.target.parentElement : evt.target.parentElement.parentElement;
             let contentTd = lastTd.previousElementSibling;
             let specTd = lastTd.previousElementSibling.previousElementSibling;
@@ -224,11 +253,19 @@
                         specTd.textContent = specTd.children[0].selectedOptions[0].textContent;
                         lastTd.innerHTML = `<button type="button" class="btn btn-outline-secondary" onclick="openPrdSpecToEdit(event)"><i class="fas fa-edit"></i></button>
                             <a href="/Product/DeletePrdSpec/${latestPrdSpecIdClicked}" class="btn btn-outline-danger"><i class="fas fa-trash-alt"></i></a>`;
-                        msgDiv.style = "display: block;";
-                        msgDiv.children[0].textContent = res.message;
+                        isOpenSomewhere = false;
+                        // msgDiv.style = "display: block;";
+                        // msgDiv.class = "alert alert-success text-dark";
+                        // msgDiv.setAttribute("class", "alert alert-success text-dark");
+                        // msgDiv.children[0].textContent = res.message;
+                        showMsgSuccessToast(res.message);
                     }
                     else {
-                        alert(res.message);
+                        // msgDiv.style = "display: block;";
+                        // msgDiv.setAttribute("class", "alert alert-danger text-dark");
+                        // msgDiv.children[0].textContent = res.message;
+                        showMsgDangerToast(res.message);
+                        // alert(res.message);
                     }
                 }
             });

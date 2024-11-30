@@ -1,20 +1,50 @@
-﻿@using AllBirds.DTOs.OrderStateDTOs
-@model CUOrderStateDTO
+﻿@model CUOrderStateDTO
 
+@section Navbar {
+
+    <partial name="_NavbarPartial" />
+}
+@section Sidebar {
+
+    <partial name="_SidebarPartial" />
+}
+@section Footer {
+
+    <partial name="_FooterPartial" />
+}
+
+@if (TempData["IsSuccess"] is bool Success)
+{
+    @if (Success)
+    {
+        <div id="msgDiv" class="alert alert-success text-dark" role="alert">
+            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
+        </div>
+    }
+    else
+    {
+        <div id="msgDiv" class="alert alert-danger text-dark" role="alert">
+            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
+        </div>
+    }
+}
+<h1 class="card-title">Create Order State</h1>
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title">Create Order State</h4>
+        @* <h4 class="card-title">Create Order State</h4> *@
         <form method="post">
             <div class="form-group">
-                <label for="StateAr">State (Arabic)</label>
-                <input type="text" class="form-control" id="StateAr" name="StateAr" required>
+                <label asp-for="StateAr"></label>
+                <input asp-for="StateAr" class="form-control">
+                <span class="text-danger" asp-validation-for="StateAr"></span>
             </div>
             <div class="form-group">
-                <label for="StateEn">State (English)</label>
-                <input type="text" class="form-control" id="StateEn" name="StateEn" required>
+                <label asp-for="StateEn"></label>
+                <input asp-for="StateEn" class="form-control">
+                <span class="text-danger" asp-validation-for="StateEn"></span>
             </div>
             <button type="submit" class="btn btn-primary mr-2">Create</button>
-            <a href="@Url.Action("Index")" class="btn btn-dark">Cancel</a>
+            <a asp-controller="Color" asp-action="GetALLForC_CO_S_OS" class="btn btn-dark">Cancel</a>
         </form>
     </div>
 </div>

@@ -1,16 +1,44 @@
-﻿@using AllBirds.DTOs.SizeDTOs
-@model CUSizeDTO
+﻿@model CUSizeDTO
 
+@section Navbar {
+
+    <partial name="_NavbarPartial" />
+}
+@section Sidebar {
+
+    <partial name="_SidebarPartial" />
+}
+@section Footer {
+
+    <partial name="_FooterPartial" />
+}
+
+@if (TempData["IsSuccess"] is bool Success)
+{
+    @if (Success)
+    {
+        <div id="msgDiv" class="alert alert-success text-dark" role="alert">
+            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
+        </div>
+    }
+    else
+    {
+        <div id="msgDiv" class="alert alert-danger text-dark" role="alert">
+            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
+        </div>
+    }
+}
+<h1 class="card-title">Create Size</h1>
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title">Create Size</h4>
+        @* <h4 class="card-title">Create Size</h4> *@
         <form method="post">
             <div class="form-group">
                 <label for="SizeNumber">Size Number</label>
                 <input type="text" class="form-control" id="SizeNumber" name="SizeNumber" required>
             </div>
             <button type="submit" class="btn btn-primary mr-2">Create</button>
-            <a href="@Url.Action("Index")" class="btn btn-dark">Cancel</a>
+            <a asp-controller="Color" asp-action="GetALLForC_CO_S_OS" class="btn btn-dark">Cancel</a>
         </form>
     </div>
 </div>

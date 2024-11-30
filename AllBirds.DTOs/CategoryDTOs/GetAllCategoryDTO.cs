@@ -16,6 +16,7 @@ namespace AllBirds.DTOs.CategoryDTOs
         
         [StringLength(40, MinimumLength = 3)]
         public string NameEn { get; set; }
+        public bool IsParentCategory { get; set; } = false;
         public string? ImagePath { get; set; }
     }
 }
