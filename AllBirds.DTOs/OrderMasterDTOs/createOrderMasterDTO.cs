@@ -8,21 +8,25 @@ using System.Threading.Tasks;
 
 namespace AllBirds.DTOs.OrderMasterDTOs
 {
-    public class createOrderMasterDTO
+    public class CreateOrderMasterDTO
     {
+        //[MaxLength(100)]
+        //public string? OrderNo { get; set; } // not needed in creation
 
-        public int Id { get; set; }
-        [MaxLength(100)]
 
-        public string OrderNo { get; set; }
+        //public int OrderStateId { get; set; } = 1; //  not needed in creation
 
-        public int ClientId { get; set; }
+        //[MaxLength(128)]
+        //public string? Notes { get; set; } // not needed in creation
+
+        //public int? CouponId { get; set; } // not needed in creation
+        public int Id { get; set; } = 0;
+
+        public int ClientId { get; set; } = 0;
+
         [Range(10,15000)]
         public decimal Total { get; set; }
-        public int OrderStateId { get; set; }
-        [MaxLength(128)]
-        public string? Notes { get; set; }
-        public int? CouponId { get; set; }
-        public List<CreateOrderDetailsDTO> ProductColorSizeId { get; set; }
+
+        public List<CreateOrderDetailDTO> ProductColorSizeId { get; set; }
     }
 }

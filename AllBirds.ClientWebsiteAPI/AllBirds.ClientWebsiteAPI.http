@@ -1,6 +1,0 @@
-@AllBirds.ClientWebsiteAPI_HostAddress = http://localhost:5120
-
-GET {{AllBirds.ClientWebsiteAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

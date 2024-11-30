@@ -3,6 +3,25 @@
     ViewData["Title"] = "Login";
     Layout = "_AccountLayout";
 }
+@if (TempData["IsSuccess"] is bool Success)
+{
+    @if (Success)
+    {
+        @section Scripts {
+            <script>
+                showMsgSuccessToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+    }
+    else
+    {
+        @section Scripts {
+            <script>
+                showMsgDangerToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+    }
+}
 <h3 class="card-title text-left mb-3">Login</h3>
 <form asp-action="Login">
     <div class="form-group">
@@ -35,5 +54,5 @@
             <i class="mdi mdi-google-plus"></i> Google plus
         </button>
     </div>
-    <p class="sign-up">Don't have an Account?<a asp-controller="Account" asp-action="Register"> Sign Up</a></p>
+    @* <p class="sign-up">Don't have an Account?<a asp-controller="Account" asp-action="Register"> Sign Up</a></p> *@
 </form>

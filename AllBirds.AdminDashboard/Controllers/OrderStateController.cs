@@ -1,5 +1,7 @@
 ﻿using AllBirds.Application.Services.OrderStateServices;
 using AllBirds.DTOs.OrderStateDTOs;
+using AllBirds.DTOs.Shared;
+using AllBirds.DTOs.SizeDTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AllBirds.AdminDashboard.Controllers
@@ -15,8 +17,10 @@ namespace AllBirds.AdminDashboard.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var orderStates = await _orderStateService.GetAllAsync();
-            return View(orderStates);
+            ResultView<List<CUOrderStateDTO>> orderStates = await _orderStateService.GetAllAsync();
+            TempData["Msg"] = orderStates.Msg;
+            TempData["IsSuccess"] = orderStates.IsSuccess;
+            return View(orderStates.Data);
         }
 
         public IActionResult Create()
@@ -29,15 +33,25 @@ namespace AllBirds.AdminDashboard.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _orderStateService.CreateAsync(orderStateDto);
-                return RedirectToAction(nameof(Index));
+                ResultView<CUOrderStateDTO> resultView = await _orderStateService.CreateAsync(orderStateDto);
+                TempData["Msg"] = resultView.Msg;
+                TempData["IsSuccess"] = resultView.IsSuccess;
+                if (resultView.IsSuccess)
+                {
+                    return Redirect("/Color/GetALLForC_CO_S_OS");
+
+                }
+                else
+                {
+                    return View(orderStateDto);
+                }
             }
             return View(orderStateDto);
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var orderState = await _orderStateService.GetByIdAsync(id);
+            CUOrderStateDTO orderState = await _orderStateService.GetByIdAsync(id);
             if (orderState == null)
             {
                 return NotFound();
@@ -50,35 +64,44 @@ namespace AllBirds.AdminDashboard.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _orderStateService.UpdateAsync(orderStateDto);
-                return RedirectToAction(nameof(Index));
+               ResultView<CUOrderStateDTO> resultView = await _orderStateService.UpdateAsync(orderStateDto);
+                if (resultView.IsSuccess)
+                {
+                    TempData["IsSuccess"] = resultView.IsSuccess;
+                    TempData["Msg"] = resultView.Msg;
+                    return Redirect("/Color/GetALLForC_CO_S_OS");
+                }
+                return View(orderStateDto);
             }
             return View(orderStateDto);
         }
 
-        //
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var orderState = await _orderStateService.GetByIdAsync(id);
+        //    if (orderState == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return View(orderState);
+        //}
+
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var orderState = await _orderStateService.GetByIdAsync(id);
-            if (orderState == null)
-            {
-                return NotFound();
-            }
-            return View(orderState);
-        }
+            //if (hardDelete)
+            //{
+              ResultView<CUOrderStateDTO> resultView = await _orderStateService.HardDeleteAsync(id);
+            TempData["IsSuccess"] = resultView.IsSuccess;
+            TempData["Msg"] = resultView.Msg;
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(int id, bool hardDelete)
-        {
-            if (hardDelete)
-            {
-                await _orderStateService.HardDeleteAsync(id);
-            }
-            else
-            {
-                await _orderStateService.SoftDeleteAsync(id);
-            }
-            return RedirectToAction(nameof(Index));
+            return Redirect("/Color/GetALLForC_CO_S_OS");
+            //}
+            //else
+            //{
+            //    await _orderStateService.SoftDeleteAsync(id);
+            //}
+
         }
     }
 

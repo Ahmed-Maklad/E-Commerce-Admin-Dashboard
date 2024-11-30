@@ -17,6 +17,7 @@ namespace AllBirds.DTOs.ProductColorDTOs
         public string ColorNameEn { get; set; }
         public string ColorNameAr { get; set; }
         public string ColorCode { get; set; }
+        public bool IsDeleted { get; set; }
 
 
         public int MainImageId { get; set; }

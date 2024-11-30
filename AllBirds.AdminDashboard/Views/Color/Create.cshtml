@@ -1,23 +1,49 @@
-﻿@using AllBirds.DTOs.ColorDTOs
-@model CUColorDTO
+﻿@model CUColorDTO
 
+@section Navbar {
+
+    <partial name="_NavbarPartial" />
+}
+@section Sidebar {
+
+    <partial name="_SidebarPartial" />
+}
+@section Footer {
+
+    <partial name="_FooterPartial" />
+}
+
+@if (TempData["IsSuccess"] is bool Success)
+{
+    @if (!Success)
+    {
+        <div id="msgDiv" class="alert alert-danger text-dark" role="alert">
+            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
+        </div>
+    }
+
+}
+<h1 class="card-title">Create Color</h1>
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title">Create Color</h4>
-        <p class="card-description">Use this form to create a new color</p>
+        @* <h4 class="card-title">Create Color</h4>
+        <p class="card-description">Use this form to create a new color</p> *@
 
         <form asp-action="Create" method="post" class="forms-sample">
             <div class="form-group">
-                <label for="ColorName">Color NameEn</label>
-                <input type="text" class="form-control" asp-for="NameEn" />                
-                <label for="ColorName">Color NameAr</label>
-                <input type="text" class="form-control" asp-for="NameAr" />
-                <label for="ColorName">Color Code</label>
-                <input type="text" class="form-control" asp-for="Code" />
+                <label style="margin-top:6px" for="ColorName">Color NameEn</label>
+                <input style="margin-top:4px" type="text" class="form-control" asp-for="NameEn" />     
+                <span class="text-danger" asp-validation-for="NameEn"></span>
+                <label style="margin-top:6px" for="ColorName">Color NameAr</label>
+                <input style="margin-top:4px" type="text" class="form-control" asp-for="NameAr" />
+                <span class="text-danger" asp-validation-for="NameAr"></span>
+                <label style="margin-top:6px" for="ColorName">Color Code</label>
+                <input style="margin-top:4px" type="color" class="form-control" asp-for="Code" />
+                <span class="text-danger" asp-validation-for="Code"></span>
             </div>
 
             <button type="submit" class="btn btn-primary mr-2">Create</button>
-            <a href="@Url.Action("Index", "Color")" class="btn btn-dark">Cancel</a>
+            <a asp-controller="Color" asp-action="GetALLForC_CO_S_OS" class="btn btn-dark">Cancel</a>
         </form>
     </div>
 </div>

@@ -11,5 +11,7 @@ namespace AllBirds.Application.Contracts
     public interface IAccountRoleRepository
     {
         public Task<IQueryable<IdentityUserRole<int>>> GetAllAccountRolesAsync();
+        public Task<IdentityUserRole<int>> DeleteAsync(IdentityUserRole<int> identityUserRole);
+        public Task<int> SaveChangesAsync();
     }
 }

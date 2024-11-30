@@ -18,6 +18,7 @@ namespace AllBirds.DTOs.ProductColorDTOs
         public string? MainImagePath { get; set; }
         public string ColorCode { get; set; }
 
+        public List<int> ProductColorImageId { get; set; }
         public List<string> Images { get; set; }
         public List<string> Sizes { get; set; }
 

@@ -1,6 +1,10 @@
 ﻿@model List<GetAllCategoryDTO>
 @{
     ViewData["Title"] = "GetAll";
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int pageSize = ViewBag.PageSize ?? 10;
+    int totalItems = ViewBag.TotalItems ?? 0;
+    int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 }
 
 @section Navbar {
@@ -17,6 +21,31 @@
 }
 
 @* <h1>AllCategory</h1> *@
+@if (TempData["IsSuccess"] is bool Success)
+{
+    @if (Success)
+    {
+        @* <div id="msgDiv" class="alert alert-success text-dark" role="alert">
+            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
+        </div> *@
+        @section Scripts {
+            <script>
+                showMsgSuccessToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+    }
+    else
+    {
+        @* <div id="msgDiv" class="alert alert-danger text-dark" role="alert">
+            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
+        </div> *@
+        @section Scripts {
+            <script>
+                showMsgDangerToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+    }
+}
 
 <div class="row ">
     <div class="col-12 grid-margin">
@@ -24,7 +53,14 @@
             <div class="card-body">
                 <h3 class="card-title">All Categories</h3>
                 <p class="card-description">
+                    @* <button type="button" class="btn btn-success btn-fw" onclick="showMsgSuccessToast('custom msg success')">Success</button>
+                    <button type="button" class="btn btn-info btn-fw" onclick="showInfoToast()">Info</button>
+                    <button type="button" class="btn btn-warning btn-fw" onclick="showWarningToast()">Warning</button>
+                    <button type="button" class="btn btn-danger btn-fw" onclick="showMsgDangerToast('custom msg danger')">Danger</button> *@
                     <a class="btn btn-primary" asp-controller="Category" asp-action="Create"><i class="fas fa-plus"></i> New</a>
+                    
+
+                    
                 </p>
                 <div class="table-responsive">
                     <table class="table table-striped">
@@ -40,6 +76,7 @@
                                 </th> *@
                                 <th> Name En </th>
                                 <th> Name Ar </th>
+                                <th> Is Parent </th>
                                 <th> Actions </th>
                             </tr>
                         </thead>
@@ -56,10 +93,20 @@
                                 </td> *@
                                     <td> @cat.NameEn </td>
                                     <td> @cat.NameAr </td>
+                                    @if (cat.IsParentCategory)
+                                    {
+                                        <td> <label class="badge badge-success">Parent</label> </td>
+                                    }
+                                    else
+                                    {
+                                        <td> <lablel class="badge badge-danger">Not Parent</lablel> </td>
+                                    }
+                                    @* <td> @cat.IsParentCategory </td> *@
                                     <td>
                                         <a type="button" asp-action="CategiryDetils" asp-controller="Category" asp-route-id="@cat.Id" class="btn btn-outline-primary"><i class="fas fa-eye"></i></a>
                                         <a type="button" asp-action="Update" asp-controller="Category" asp-route-id="@cat.Id" class="btn btn-outline-secondary"><i class="fas fa-edit"></i></a>
-                                        <a type="button" asp-action="Delete" asp-controller="Category" asp-route-id="@cat.Id" class="btn btn-outline-danger"><i class="fas fa-trash-alt"></i></a>
+                                        <button type="button" class="btn btn-outline-danger" onclick="openModal('Category', '/Category/Delete/@cat.Id')"><i class="fas fa-trash-alt"></i></button>
+                                        @* <a type="button" asp-action="Delete" asp-controller="Category" asp-route-id="@cat.Id" class="btn btn-outline-danger"><i class="fas fa-trash-alt"></i></a> *@
                                     </td>
                                 </tr>
                             }
@@ -67,14 +114,28 @@
                     </table>
                 </div>
             </div>
+            <!-- Pagination -->
             <nav>
                 <ul class="pagination d-flex justify-content-center rounded-separated pagination-primary">
-                    <li class="page-item"><a class="page-link" href="#"><i class="mdi mdi-chevron-left"></i></a></li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">4</a></li>
-                    <li class="page-item"><a class="page-link" href="#"><i class="mdi mdi-chevron-right"></i></a></li>
+                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="GetAll" asp-route-pageNumber="@(currentPage - 1)" asp-route-pageSize="@pageSize"><i class="mdi mdi-chevron-left"></i></a>
+                    </li>
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        <li class="page-item @(i == currentPage ? "active" : "")">
+                            @if (i == currentPage)
+                            {
+                                <a class="page-link">@i</a>
+                            }
+                            else
+                            {
+                                <a class="page-link" asp-action="GetAll" asp-route-pageNumber="@i" asp-route-pageSize="@pageSize">@i</a>
+                            }
+                        </li>
+                    }
+                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                        <a class="page-link" asp-action="GetAll" asp-route-pageNumber="@(currentPage + 1)" asp-route-pageSize="@pageSize"><i class="mdi mdi-chevron-right"></i></a>
+                    </li>
                 </ul>
             </nav>
         </div>

@@ -1,10 +1,12 @@
 ﻿using AllBirds.Application.Services.CategoryServices;
 using AllBirds.DTOs.CategoryDTOs;
 using AllBirds.DTOs.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AllBirds.AdminDashboard.Controllers
 {
+    [Authorize(Roles = "SuperUser,Manager,Admin")]
     public class CategoryController : Controller
     {
         private readonly ICategoryService categoryService;
@@ -21,7 +23,7 @@ namespace AllBirds.AdminDashboard.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            ResultView<List<GetAllCategoryDTO>> getAllCategoryDTOs = await categoryService.GetAllAsync();
+            ResultView<List<GetAllCategoryDTO>> getAllCategoryDTOs = await categoryService.GetAllAsync(onlyParents: true);
             ViewBag.getAllCategoryDTOs = getAllCategoryDTOs.Data;
             return View();
         }
@@ -49,10 +51,20 @@ namespace AllBirds.AdminDashboard.Controllers
                 ResultView<CUCategoryDTO> resultView = await categoryService.CreateAsync(cUCategoryDTO);
 
                 // here we need to check if the result is success and do different things accordingly
+                TempData.Add("IsSuccess", resultView.IsSuccess);
+                TempData.Add("Msg", resultView.Msg);
+                if (!resultView.IsSuccess)
+                {
+                    ResultView<List<GetAllCategoryDTO>> getAllCategoryDTOs = await categoryService.GetAllAsync(onlyParents: true);
+                    ViewBag.getAllCategoryDTOs = getAllCategoryDTOs.Data;
+                    return View(cUCategoryDTO);
+                }
                 return RedirectToAction("GetAll");
             }
             else
             {
+                ResultView<List<GetAllCategoryDTO>> getAllCategoryDTOs = await categoryService.GetAllAsync(onlyParents: true);
+                ViewBag.getAllCategoryDTOs = getAllCategoryDTOs.Data;
                 return View(cUCategoryDTO);
             }
         }
@@ -61,7 +73,7 @@ namespace AllBirds.AdminDashboard.Controllers
         public async Task<IActionResult> Update(int id)
         {
             ////to make chose parent catgory
-            ResultView<List<GetAllCategoryDTO>> getAllCategoryDTOs = await categoryService.GetAllAsync();
+            ResultView<List<GetAllCategoryDTO>> getAllCategoryDTOs = await categoryService.GetAllAsync(onlyParents: true);
             ViewBag.getAllCategoryDTOs = getAllCategoryDTOs.Data;
             //
             ResultView<CUCategoryDTO> ResultView = await categoryService.GetOneAsync(id);
@@ -97,25 +109,57 @@ namespace AllBirds.AdminDashboard.Controllers
                 ResultView<CUCategoryDTO> resultView = await categoryService.UpdateAsync(cUCategoryDTO);
 
                 // here we need to check if the result is success and do different things accordingly
+                TempData.Add("IsSuccess", resultView.IsSuccess);
+                TempData.Add("Msg", resultView.Msg);
+                if (!resultView.IsSuccess)
+                {
+                    ResultView<List<GetAllCategoryDTO>> getAllCategoryDTOs = await categoryService.GetAllAsync(onlyParents: true);
+                    ViewBag.getAllCategoryDTOs = getAllCategoryDTOs.Data;
+                    return View(cUCategoryDTO);
+                }
                 return RedirectToAction("GetAll");
             }
             else
             {
+                ResultView<List<GetAllCategoryDTO>> getAllCategoryDTOs = await categoryService.GetAllAsync(onlyParents: true);
+                ViewBag.getAllCategoryDTOs = getAllCategoryDTOs.Data;
                 return View(cUCategoryDTO);
             }
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    ResultView<List<GetAllCategoryDTO>> getAllCategoryDTOs = await categoryService.GetAllAsync();
+        //    if (!getAllCategoryDTOs.IsSuccess)
+        //    {
+        //        TempData.Add("IsSuccess", false);
+        //        TempData.Add("Msg", getAllCategoryDTOs.Msg);
+        //    }
+        //    return View(getAllCategoryDTOs.Data);
+        //}
+
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(int pageNumber = 1, int pageSize = 8)
         {
-            ResultView<List<GetAllCategoryDTO>> getAllCategoryDTOs = await categoryService.GetAllAsync();
-            return View(getAllCategoryDTOs.Data);
+            ResultView<EntityPaginated<GetAllCategoryDTO>> paginatedCategories = await categoryService.GetAllPaginatedAsync(pageNumber, pageSize);
+            if (!paginatedCategories.IsSuccess)
+            {
+                TempData["IsSuccess"] = false;
+                TempData["Msg"] = paginatedCategories.Msg;
+            }
+            ViewBag.CurrentPage = pageNumber;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalItems = paginatedCategories.Data?.Count ?? 0;
+            return View(paginatedCategories.Data?.Data ?? new List<GetAllCategoryDTO>());
         }
 
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             ResultView<GetOneCategoryDTO> deletCategory = await categoryService.DeleteAsync(id);
+            TempData.Add("IsSuccess", deletCategory.IsSuccess);
+            TempData.Add("Msg", deletCategory.Msg);
             return RedirectToAction("GetAll");
         }
 

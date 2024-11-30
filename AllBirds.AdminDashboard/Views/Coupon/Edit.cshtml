@@ -1,26 +1,53 @@
-﻿@using AllBirds.DTOs.CouponDTOs
-@model CUCouponDTO
+﻿@model CUCouponDTO
 
+@section Navbar {
+
+    <partial name="_NavbarPartial" />
+}
+@section Sidebar {
+
+    <partial name="_SidebarPartial" />
+}
+@section Footer {
+
+    <partial name="_FooterPartial" />
+}
+
+@if (TempData["IsSuccess"] is bool Success)
+{
+    @if (Success)
+    {
+        <div id="msgDiv" class="alert alert-success text-dark" role="alert">
+            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
+        </div>
+    }
+    else
+    {
+        <div id="msgDiv" class="alert alert-danger text-dark" role="alert">
+            <span>@TempData["Msg"]</span> <button onclick="closeMsg(event)" class="btn btn-outline-danger"><i class="mdi mdi-close"></i></button>
+        </div>
+    }
+}
+<h1 class="card-title">Update Coupon</h1>
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title">Edit Coupon</h4>
+        @* <h4 class="card-title">Edit Coupon</h4> *@
         <form method="post">
             <div class="form-group">
-                <label for="Code">Coupon Code</label>
-                <input type="text" class="form-control" id="Code" name="Code" required>
+                <label asp-for="Code">Coupon Code</label>
+                <input type="text" class="form-control" asp-for="Code">
             </div>
             <div class="form-group">
-                <label for="Discount">Discount</label>
-                <input type="number" class="form-control" id="Discount" name="Discount" required>
+                <label asp-for="Discount"></label>
+                <input type="number" class="form-control" min="0" max="100" asp-for="Discount">
             </div>
-            <div class="form-group">
-                <label for="IsActive">Status</label>
-               
-                <input type="checkbox" class="form-control" asp-for="IsActive">
-
+            <div class="form-check form-check-flat form-check-primary">
+                <label asp-for="IsActive" class="form-check-label">
+                    <input type="checkbox" class="form-check-input" asp-for="IsActive" value="@Model.IsActive"> Active
+                </label>
             </div>
             <button type="submit" class="btn btn-primary mr-2">Save</button>
-            <a href="@Url.Action("Index")" class="btn btn-dark">Cancel</a>
+            <a asp-controller="Color" asp-action="GetALLForC_CO_S_OS" class="btn btn-dark">Cancel</a>
         </form>
     </div>
 </div>

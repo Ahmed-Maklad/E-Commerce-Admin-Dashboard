@@ -8,6 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\Images\ProductColorImages\**" />
+    <Compile Remove="wwwroot\Images\ProductDetails\**" />
+    <Content Remove="wwwroot\Images\ProductColorImages\**" />
+    <Content Remove="wwwroot\Images\ProductDetails\**" />
+    <EmbeddedResource Remove="wwwroot\Images\ProductColorImages\**" />
+    <EmbeddedResource Remove="wwwroot\Images\ProductDetails\**" />
+    <None Remove="wwwroot\Images\ProductColorImages\**" />
+    <None Remove="wwwroot\Images\ProductDetails\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.10" />
@@ -16,7 +27,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,8 +39,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\assets\js\" />
-    <Folder Include="wwwroot\assets\vendors\" />
-    <Folder Include="wwwroot\Images\ProductDetails\" />
   </ItemGroup>
 
 </Project>

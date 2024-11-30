@@ -29,12 +29,12 @@ namespace AllBirds.Application.Services.ProductSpecificationServices
             try
             {
                 bool Exist = (await productSpecRepository.GetAllAsync()).Any(ps => ps.Id == entity.Id ||
-                ps.ProductId == entity.ProductId && ps.SpecificationId == entity.SpecificationId);
+                (ps.ProductId == entity.ProductId && ps.SpecificationId == entity.SpecificationId));
                 if (Exist)
                 {
                     resultView.IsSuccess = false;
                     resultView.Data = null;
-                    resultView.Msg = $"Product Specification With Same Specification Id ({entity.SpecificationId}) Already Exist";
+                    resultView.Msg = $"Same Product Specification Already Exists";
                 }
                 else
                 {
@@ -44,7 +44,7 @@ namespace AllBirds.Application.Services.ProductSpecificationServices
                     CUProductSpecificationDTO successSpecificationDTO = mapper.Map<CUProductSpecificationDTO>(successSpecification);
                     resultView.IsSuccess = true;
                     resultView.Data = successSpecificationDTO;
-                    resultView.Msg = $"Product Specification ({successSpecification.Id}) Created Successfully";
+                    resultView.Msg = $"Product Specification Created Successfully";
                 }
             }
             catch (Exception ex)
@@ -70,8 +70,7 @@ namespace AllBirds.Application.Services.ProductSpecificationServices
                     resultView.Msg = $"Product Specification ({entity.Id}) Doesn't Exist";
                     return resultView;
                 }
-                else if ((await productSpecRepository.GetAllAsync()).Any(ps => ps.SpecificationId == entity.SpecificationId && ps.ProductId == entity.ProductId
-                && ps.ContentAr == entity.ContentAr && ps.ContentEn == entity.ContentEn))
+                else if ((await productSpecRepository.GetAllAsync()).Any(ps => ps.SpecificationId == entity.SpecificationId && ps.ProductId == entity.ProductId ))
                 {
                     resultView.IsSuccess = false;
                     resultView.Data = null;
@@ -101,7 +100,7 @@ namespace AllBirds.Application.Services.ProductSpecificationServices
             ResultView<GetProductSpecificationDTO> resultView = new();
             try
             {
-                ProductSpecification? productSpecExist = (await productSpecRepository.GetAllAsync()).FirstOrDefault(ps => ps.Id == id);
+                ProductSpecification? productSpecExist = (await productSpecRepository.GetAllAsync()).Include(ps => ps.Specification).FirstOrDefault(ps => ps.Id == id);
                 if (productSpecExist is not null)
                 {
                     ProductSpecification deletedProductSpec = await productSpecRepository.DeleteAsync(productSpecExist);
@@ -109,7 +108,7 @@ namespace AllBirds.Application.Services.ProductSpecificationServices
                     GetProductSpecificationDTO getProductSpecDTO = mapper.Map<GetProductSpecificationDTO>(deletedProductSpec);
                     resultView.IsSuccess = true;
                     resultView.Data = getProductSpecDTO;
-                    resultView.Msg = $"Specification ({getProductSpecDTO.SpecificationNameEn}) For Product ({getProductSpecDTO.ProductNo}) Hard Deleted Successfully";
+                    resultView.Msg = $"Specification ({getProductSpecDTO.SpecificationNameEn}) Deleted Successfully";
                     return resultView;
                 }
                 else

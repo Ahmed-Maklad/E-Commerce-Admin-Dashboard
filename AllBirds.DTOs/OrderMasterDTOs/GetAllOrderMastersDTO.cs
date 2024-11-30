@@ -19,7 +19,7 @@ namespace AllBirds.DTOs.OrderMasterDTOs
         public string? OrderStateName { get; set; }
 
         public string? Notes { get; set; }
-        public virtual int? CouponId { get; set; }  //coupon quantity
+        public int? CouponId { get; set; }  //coupon quantity
         public string? DiscountAmount { get; set; }  //coupon quantity
         public string? DiscountPerctnage { get; set; }  //coupon quantity
 

@@ -21,7 +21,7 @@ namespace AllBirds.Models
         public virtual OrderState? OrderState { get; set; }
         [MaxLength(128)]
         public string? Notes { get; set; }
-        public virtual int? CouponId { get; set; }
+        public int? CouponId { get; set; }
         public virtual Coupon? Coupon { get; set; }
         public virtual ICollection<OrderDetail>? OrderDetails { get; set; }
     }

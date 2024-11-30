@@ -87,9 +87,9 @@
                     <input type="hidden" asp-for="Data.Id" />
 
                     <button type="submit" class="btn btn-primary mr-2">Update</button>
-                    <a asp-controller="ProductDetail" asp-action="Update" class="btn btn-dark">Cancel</a>
+                    <a asp-controller="ProductDetail" asp-action="AllProductDetails" asp-route-id="@Model.Data.ProductId" class="btn btn-dark">Cancel</a>
                 </form>
-                @if (Model.IsSuccess)
+               @*  @if (Model.IsSuccess)
                 {
                     <h4 class="text-success mg-5" style="text-align:center">
                         @Model.Msg
@@ -100,7 +100,7 @@
                     <h4 class="text-danger mg-5" style="text-align:center" >
                         @Model.Msg
                     </h4>
-                }
+                } *@
 
             </div>
         </div>
@@ -113,4 +113,19 @@
     <script src="~/assets/vendors/select2/select2.min.js"></script>
     <script src="~/assets/js/file-upload.js"></script>
     <script src="~/assets/js/select2.js"></script>
+    @if (TempData["IsSuccess"] is bool Success)
+    {
+        @if (Success)
+        {
+            <script>
+                showMsgSuccessToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+        else
+        {
+            <script>
+                showMsgDangerToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+    }
 } 

@@ -25,47 +25,36 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Create Product Color</h4>
+
+                <div class="col-md-1  d-flex p-2  justify-content-start" style="margin-left:-20px;">
+                    <button onclick="AddInput()" class="btn  btn-outline-primary">
+                        <i class="mdi mdi-plus"></i>
+                    </button>
+                </div>
+
                 <form asp-action="CreateProductColor" asp-controller="Product" enctype="multipart/form-data">
                     <input hidden asp-for="@Model.ProductId" value="@ViewBag.ProductId" />
                     <div class="row">
                         <div class="col-md-12">
-                            @*<div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Color</label>
-                            <div class="col-sm-9">
-                            <select class="js-example-basic-multiple" multiple style="width: 100%" asp-for="ColorId" asp-items="colorList">  </select>
-                            </div>
-                            </div>*@
                             <div class="form-group row">
-                                <select class="form-control" asp-for="ColorId" asp-items="colorList">
+                                <select class="form-control text-light" asp-for="ColorId" asp-items="colorList">
                                 </select>
                             </div>
                             <span class="text-danger" asp-validation-for="ColorId"></span>
                         </div>
                     </div>
-                    <div class="row addInput">
+                    <div class="row ">
                         <div class="col-md-12">
-                            <div class="form-group row">
+                            <div class="form-group row addInput">
 
                                 <label class="col-sm-3 col-form-label" style="font-weight:bold; font-size:large;" asp-for="@Model.Images"></label>
 
-                                    <button onclick="AddInput()" class="btn btn-outline-primary">
-                                        <i class="mdi mdi-plus"></i>
-                                    </button>
-                     
-                                <div class="col-sm-12" style="display: flex; ">
-                                    <input class="form-control" type="file" name="Images" />
-                                    <span class="text-danger" asp-validation-for="@Model.Images"></span>
-
+                                <div class="form-group row" style="display: flex; align-items: center;">
+                                    <div class="col-sm-12 d-flex align-items-center" style="color:coral;">
+                                        <input class="form-control text-danger" type="file" asp-for="@Model.Images" />
+                                        <span class="text-danger" asp-validation-for="@Model.Images"></span>
+                                    </div>
                                 </div>
-
-                                @*<label asp-for="@Model.Images"></label>
-                                <input type="image" asp-for="@Model.Images" class="file-upload-default">
-                                <div class="input-group col-xs-12">
-                                <input type="image" asp-for="@Model.Images" class=" form-control file-upload-info" disabled placeholder="Upload Image">
-                                <span class="input-group-append">
-                                <button class="file-upload-browse btn btn-primary" type="button">Upload</button>
-                                </span>
-                                </div>*@
                             </div>
                         </div>
 
@@ -80,14 +69,61 @@
 </div>
 @section Scripts {
     <script src="~/assets/js/file-upload.js"></script>
-
+    @if (TempData["IsSuccess"] is bool Success)
+    {
+        @if (Success)
+        {
+            <script>
+                showMsgSuccessToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+        else
+        {
+            <script>
+                showMsgDangerToast(@Html.Raw(Json.Serialize(TempData["Msg"])));
+            </script>
+        }
+    }
     <script>
         function AddInput() {
-            let AddInput = document.getElementsByClassName("addInput")
-            AddInput.innerHTML += <div class="col-sm-12" style="display: flex; ">
-                <input class="form-control" name="Images" type="file" />
-            </div>
+            let addInput = document.getElementsByClassName("addInput")[0];
+
+            let newInputDiv = document.createElement("div");
+            newInputDiv.className = "col-sm-12 d-flex align-items-center";
+            newInputDiv.style.color = "coral";
+            newInputDiv.style.marginTop = "10px";
+
+            let newInput = document.createElement("input");
+            newInput.className = "form-control text-danger";
+            newInput.type = "file";
+            newInput.name = "Images";
+
+            let RemoveInput = document.createElement("div");
+            RemoveInput.className = "col-md-1 mg-2 d-flex p-2 justify-content-end";
+            RemoveInput.style.marginLeft = "25px";
+
+            let button = document.createElement("button");
+            button.className = "btn btn-outline-danger";
+            button.onclick = function () {
+                addInput.removeChild(newInputDiv);
+            };
+
+            let icon = document.createElement("i");
+            icon.className = "mdi mdi-close";
+            button.appendChild(icon);
+
+            RemoveInput.appendChild(button);
+
+            newInputDiv.appendChild(newInput);
+            newInputDiv.appendChild(RemoveInput);
+
+            addInput.appendChild(newInputDiv);
         }
+
+
+
+
+
 
     </script>
 

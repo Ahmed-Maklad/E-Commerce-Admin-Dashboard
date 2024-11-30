@@ -1,5 +1,7 @@
 ﻿using AllBirds.Application.Contracts;
+using AllBirds.DTOs.ColorDTOs;
 using AllBirds.DTOs.CouponDTOs;
+using AllBirds.DTOs.Shared;
 using AllBirds.Models;
 using AutoMapper;
 
@@ -16,26 +18,67 @@ namespace AllBirds.Application.Services.CouponServices
             _mapper = mapper;
         }
 
-        public async Task<CUCouponDTO> CreateAsync(CUCouponDTO cUCouponDTO)
+        public async Task<ResultView<CUCouponDTO>> CreateAsync(CUCouponDTO cUCouponDTO)
         {
-            Coupon mappedCoupon = _mapper.Map<Coupon>(cUCouponDTO);
-            Coupon createdCoupon = await _couponRepository.CreateAsync(mappedCoupon);
-            await _couponRepository.SaveChangesAsync();
-            return _mapper.Map<CUCouponDTO>(createdCoupon);
+            ResultView<CUCouponDTO> resultView = new();
+            try
+            {
+                Coupon mappedCoupon = _mapper.Map<Coupon>(cUCouponDTO);
+                Coupon createdCoupon = await _couponRepository.CreateAsync(mappedCoupon);
+                if (createdCoupon is not null)
+                {
+                    await _couponRepository.SaveChangesAsync();
+                    CUCouponDTO cUCoupon = _mapper.Map<CUCouponDTO>(createdCoupon);
+                    resultView.IsSuccess = true;
+                    resultView.Msg = $"Coupon {cUCoupon.Code} Created Successfully";
+                    resultView.Data = cUCoupon;
+                    return resultView;
+                }
+                resultView.IsSuccess = false;
+                resultView.Msg = $"Coupon {cUCouponDTO.Code} Not Created Successfully";
+                resultView.Data = null;
+                return resultView;
+            }
+            catch (Exception ex)
+            {
+                resultView.IsSuccess = false;
+                resultView.Data = null;
+                resultView.Msg = $"Error Happened While Creating Coupon ${cUCouponDTO.Code} ${ex.Message}";
+            }
+            return resultView;
         }
 
-        public async Task<CUCouponDTO> UpdateAsync(CUCouponDTO cUCouponDTO)
+        public async Task<ResultView<CUCouponDTO>> UpdateAsync(CUCouponDTO cUCouponDTO)
         {
-            Coupon? couponObj = (await _couponRepository.GetAllAsync()).FirstOrDefault(s => s.Id == cUCouponDTO.Id && s.IsDeleted == false);
-            if (couponObj is not null)
+            ResultView<CUCouponDTO> resultView = new();
+            try
             {
-                couponObj.Code = cUCouponDTO.Code;
-                couponObj.Discount = cUCouponDTO.Discount;
-                couponObj.IsActive = cUCouponDTO.IsActive;
-                await _couponRepository.SaveChangesAsync();
-                return _mapper.Map<CUCouponDTO>(couponObj);
+                Coupon? couponObj = (await _couponRepository.GetAllAsync()).FirstOrDefault(s => s.Id == cUCouponDTO.Id && s.IsDeleted == false);
+                if (couponObj is not null)
+                {
+                    couponObj.Code = cUCouponDTO.Code;
+                    couponObj.Discount = cUCouponDTO.Discount;
+                    couponObj.IsActive = cUCouponDTO.IsActive;
+                    await _couponRepository.SaveChangesAsync();
+                    CUCouponDTO cUCoupon = _mapper.Map<CUCouponDTO>(couponObj);
+                    resultView.IsSuccess = true;
+                    resultView.Msg = $"Coupon {cUCouponDTO.Code} Updated Successfully";
+                    resultView.Data = cUCoupon;
+                    return resultView;
+                }
+                resultView.IsSuccess = false;
+                resultView.Msg = $"Coupon {cUCouponDTO.Code} Not Updated Successfully";
+                resultView.Data = null;
+                return resultView;
+
             }
-            return null;
+            catch (Exception ex)
+            {
+                resultView.IsSuccess = false;
+                resultView.Data = null;
+                resultView.Msg = $"Error Happened While Updated Coupon ${cUCouponDTO.Code} ${ex.Message}";
+            }
+            return resultView;
         }
 
         public async Task<CUCouponDTO> SoftDeleteAsync(int couponId)
@@ -50,24 +93,70 @@ namespace AllBirds.Application.Services.CouponServices
             return null;
         }
 
-        public async Task<CUCouponDTO> HardDeleteAsync(int couponId) // will this throw tracking exception ??
+        public async Task<ResultView<CUCouponDTO>> HardDeleteAsync(int couponId)
         {
-            Coupon? couponObj = (await _couponRepository.GetAllAsync()).FirstOrDefault(s => s.Id == couponId && s.IsDeleted == false);
-            if (couponObj is not null)
+            ResultView<CUCouponDTO> resultView = new();
+            try
             {
-                Coupon deletedCoupon = await _couponRepository.DeleteAsync(couponObj);
-                await _couponRepository.SaveChangesAsync();
-                return _mapper.Map<CUCouponDTO>(deletedCoupon);
+                bool dependentOrders = (await _couponRepository.GetAllAsync()).Any(c => c.Id == couponId && c.Orders.Count > 0);
+                if (dependentOrders)
+                {
+                    resultView.IsSuccess = false;
+                    resultView.Data = null;
+                    resultView.Msg = "Cannot Delete This Coupon As There Are Orders That Depend On It";
+                    return resultView;
+                }
+                Coupon? couponObj = (await _couponRepository.GetAllAsync()).FirstOrDefault(s => s.Id == couponId && s.IsDeleted == false);
+                if (couponObj is not null)
+                {
+                    Coupon deletedCoupon = await _couponRepository.DeleteAsync(couponObj);
+                    await _couponRepository.SaveChangesAsync();
+                    CUCouponDTO cUCoupon = _mapper.Map<CUCouponDTO>(deletedCoupon);
+                    resultView.IsSuccess = true;
+                    resultView.Msg = $"Coupon {cUCoupon.Code} Deleted Successfully";
+                    resultView.Data = cUCoupon;
+                    return resultView;
+                }
+                resultView.IsSuccess = false;
+                resultView.Msg = $"Coupon Not Deleted Successfully";
+                resultView.Data = null;
+                return resultView;
+
             }
-            return null;
+            catch (Exception ex)
+            {
+                resultView.IsSuccess = false;
+                resultView.Data = null;
+                resultView.Msg = $"Error Happened While Deleted Coupon  ${ex.Message}";
+            }
+            return resultView;
         }
 
-        public async Task<List<CUCouponDTO>> GetAllAsync()
+        public async Task<ResultView<List<CUCouponDTO>>> GetAllAsync()
         {
-            //List<Coupon> couponsList = (await _couponRepository.GetAllAsync()).Where(s => s.IsDeleted == false).ToList();
-            // this is called collection expression
-            List<Coupon> couponsList = [.. (await _couponRepository.GetAllAsync()).Where(s => !s.IsDeleted)];
-            return _mapper.Map<List<CUCouponDTO>>(couponsList);
+            ResultView<List<CUCouponDTO>> resultView = new();
+            try
+            {
+                List<Coupon> couponsList = [.. (await _couponRepository.GetAllAsync()).Where(s => !s.IsDeleted)];
+                List<CUCouponDTO> cUCoupons = _mapper.Map<List<CUCouponDTO>>(couponsList);
+                if (couponsList.Count > 0)
+                {
+                    resultView.IsSuccess = true;
+                    resultView.Data = cUCoupons;
+                    resultView.Msg = "All Coupon Fetched Successfully";
+                    return resultView;
+                }
+                resultView.IsSuccess = false;
+                resultView.Msg = "Coupons Is Empty..! Sorry";
+                resultView.Data = null;
+            }
+            catch (Exception ex)
+            {
+                resultView.IsSuccess = false;
+                resultView.Data = null;
+                resultView.Msg = $"Error Happened While Fetch Copouns ${ex.Message}";
+            }
+            return resultView;
         }
 
         public async Task<List<CUCouponDTO>> GetAllWithDeletedAsync()
@@ -75,14 +164,13 @@ namespace AllBirds.Application.Services.CouponServices
             List<Coupon> couponsList = [.. (await _couponRepository.GetAllAsync())];
             return _mapper.Map<List<CUCouponDTO>>(couponsList);
         }
-
-        public async Task<GetCouponDTO> GetByIdAsync(int couponId)
+        public async Task<CUCouponDTO> GetByIdAsync(int couponId)
         {
             IQueryable<Coupon> couponList = await _couponRepository.GetAllAsync();
             Coupon? couponObj = couponList.FirstOrDefault(s => s.Id == couponId && !s.IsDeleted); // bool operator
             if (couponObj != null)
             {
-                return _mapper.Map<GetCouponDTO>(couponObj);
+                return _mapper.Map<CUCouponDTO>(couponObj);
             }
             return null;
         }
