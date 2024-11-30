@@ -48,7 +48,6 @@ bash
 ## Our Team 🙌💼
 - Ahmed Maklad
 - Mahmoud El Sonbaty
-- Kareem 7777
 - Ahmed Mohamed Hassan
 - Hossam Hamed 🙌💼
 
