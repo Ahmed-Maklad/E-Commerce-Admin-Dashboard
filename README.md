@@ -1,4 +1,5 @@
-# Project: E-commerce Platform for Allbirds 🌟🛒
+# Project: Allbirds E-commerce Platform 🌟🛒
+## Built with ASP.NET Core MVC
 
 ## Introduction 🌟🛒
 Welcome to the **E-commerce Platform for Allbirds**, a comprehensive web application designed to manage products, orders, and customer information efficiently. This platform is built using the latest technologies to provide a seamless shopping experience.
